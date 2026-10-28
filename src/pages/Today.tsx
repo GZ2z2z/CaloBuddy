@@ -100,7 +100,7 @@ export function TodayPage() {
       {/* Floating Action Pill matching 薄荷健康 screenshot */}
       <FloatingActionBar
         onQuickFastLog={() => setShowQuickMealModal(true)}
-        onQuickSearch={() => setSearchMealType('lunch')}
+        onQuickSearch={() => setCurrentTab('search')}
         onQuickScan={() => setCurrentTab('scan')}
         onQuickAi={() => setShowAiDialog(true)}
       />

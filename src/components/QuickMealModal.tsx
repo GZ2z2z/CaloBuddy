@@ -127,33 +127,42 @@ export function QuickMealModal({ isOpen, initialMealType = 'lunch', onClose }: Q
             placeholder="例如: 聚餐火锅 / 外卖轻食 / 自定义配餐"
             value={mealName}
             onChange={(e) => setMealName(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] text-sm font-semibold"
+            className="w-full px-3 py-2 rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--color-calories)]/30"
           />
         </div>
 
-        {/* Primary Calories Input */}
+        {/* Primary Calories Input - Fixed overflow issue */}
         <div className="mb-3 bg-[var(--color-bg-secondary)]/60 p-3 rounded-2xl border border-[var(--color-divider)]">
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-bold text-[var(--color-calories)]">
               摄入总能量 (必填)
             </label>
             <button
+              type="button"
               onClick={handleAutoEstimate}
-              className="text-[11px] font-semibold text-[var(--color-calories)] hover:underline"
+              className="text-[11px] font-semibold text-[var(--color-calories)] hover:underline flex items-center gap-1"
             >
-              ✨ 按热量估算三大项
+              <span>✨ 按热量估算三大项</span>
             </button>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="relative flex items-center w-full">
             <input
               type="number"
+              inputMode="numeric"
               placeholder="如 650"
               value={calories}
               onChange={(e) => setCalories(e.target.value)}
-              className="flex-1 py-2 px-3 text-2xl font-black text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-divider)] text-center"
+              className="w-full py-2.5 pl-3 pr-24 text-2xl font-black text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-divider)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--color-calories)]/30 box-border"
             />
-            <span className="text-sm font-bold text-[var(--color-text-secondary)]">千卡 (kcal)</span>
+            <div className="absolute right-3 flex items-center pointer-events-none text-xs font-bold text-[var(--color-text-secondary)]">
+              <span>千卡 (kcal)</span>
+            </div>
           </div>
+          {calories && Number(calories) > 0 && (
+            <div className="text-right text-[11px] text-[var(--color-text-secondary)] mt-1 font-medium">
+              ≈ {Math.round(Number(calories) * 4.184)} kJ (千焦)
+            </div>
+          )}
         </div>
 
         {/* 3 Macronutrients */}
@@ -164,11 +173,12 @@ export function QuickMealModal({ isOpen, initialMealType = 'lunch', onClose }: Q
             </label>
             <input
               type="number"
+              inputMode="decimal"
               step="0.1"
               placeholder="35"
               value={protein}
               onChange={(e) => setProtein(e.target.value)}
-              className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#FB7185] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+              className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#FB7185] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] focus:outline-none focus:ring-1 focus:ring-[#FB7185]/40"
             />
           </div>
 
@@ -178,11 +188,12 @@ export function QuickMealModal({ isOpen, initialMealType = 'lunch', onClose }: Q
             </label>
             <input
               type="number"
+              inputMode="decimal"
               step="0.1"
               placeholder="70"
               value={carbs}
               onChange={(e) => setCarbs(e.target.value)}
-              className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#10B981] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+              className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#10B981] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] focus:outline-none focus:ring-1 focus:ring-[#10B981]/40"
             />
           </div>
 
@@ -192,11 +203,12 @@ export function QuickMealModal({ isOpen, initialMealType = 'lunch', onClose }: Q
             </label>
             <input
               type="number"
+              inputMode="decimal"
               step="0.1"
               placeholder="15"
               value={fat}
               onChange={(e) => setFat(e.target.value)}
-              className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#FBBF24] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+              className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#FBBF24] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] focus:outline-none focus:ring-1 focus:ring-[#FBBF24]/40"
             />
           </div>
         </div>
@@ -218,6 +230,7 @@ export function QuickMealModal({ isOpen, initialMealType = 'lunch', onClose }: Q
                 </label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   step="0.1"
                   placeholder="如 5"
                   value={fiber}
@@ -231,6 +244,7 @@ export function QuickMealModal({ isOpen, initialMealType = 'lunch', onClose }: Q
                 </label>
                 <input
                   type="number"
+                  inputMode="numeric"
                   placeholder="如 400"
                   value={sodium}
                   onChange={(e) => setSodium(e.target.value)}

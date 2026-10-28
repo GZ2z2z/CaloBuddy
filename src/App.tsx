@@ -6,6 +6,7 @@ import { applyTheme, watchSystemTheme } from '@/utils/theme';
 import { seedFoodDatabase } from '@/db/seed';
 import { OnboardingFlow } from '@/components/Onboarding';
 import { TodayPage } from '@/pages/Today';
+import { SearchPage } from '@/pages/Search';
 import { TrendsPage } from '@/pages/Trends';
 import { ScanPage } from '@/pages/Scan';
 import { SettingsPage } from '@/pages/Settings';
@@ -39,6 +40,7 @@ export default function App() {
       <main className="flex-1 overflow-y-auto pb-20">
         <AnimatePresence mode="wait">
           {currentTab === 'today' && <TodayPage key="today" />}
+          {currentTab === 'search' && <SearchPage key="search" />}
           {currentTab === 'trends' && <TrendsPage key="trends" />}
           {currentTab === 'scan' && <ScanPage key="scan" />}
           {currentTab === 'settings' && <SettingsPage key="settings" />}

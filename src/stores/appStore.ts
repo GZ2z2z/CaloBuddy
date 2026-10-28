@@ -11,7 +11,7 @@ interface AppState {
   
   // Current view
   selectedDate: string; // YYYY-MM-DD
-  currentTab: 'today' | 'trends' | 'scan' | 'settings';
+  currentTab: 'today' | 'search' | 'trends' | 'scan' | 'settings';
   
   // Daily log
   todayLog: DailyLog | null;

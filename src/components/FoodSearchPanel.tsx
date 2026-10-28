@@ -7,6 +7,7 @@ import { useAppStore } from '@/stores/appStore';
 import { calculatePortion } from '@/utils/calculator';
 import { db } from '@/db';
 import { nanoid } from 'nanoid';
+import { pinyin } from 'pinyin-pro';
 import toast from 'react-hot-toast';
 
 interface FoodSearchPanelProps {
@@ -26,10 +27,10 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
 
   const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
-  // Portion and Unit system (Requirement: separate portions and total weight, liquid ml/g)
+  // Portion and Unit system
   const [unit, setUnit] = useState<'g' | 'ml'>('g');
   const [servingUnitWeight, setServingUnitWeight] = useState(60);
-  const [servingLabel, setServingLabel] = useState('个');
+  const [servingLabel, setServingLabel] = useState('份');
   const [servingCount, setServingCount] = useState(1);
   const [totalGrams, setTotalGrams] = useState(100);
 
@@ -46,6 +47,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
   const [newFoodCategory, setNewFoodCategory] = useState<FoodCategory>('custom');
   const [newFoodUnit, setNewFoodUnit] = useState<'g' | 'ml'>('g');
   const [newFoodGrams, setNewFoodGrams] = useState('100');
+  const [newFoodKj, setNewFoodKj] = useState('');
   const [newFoodCal, setNewFoodCal] = useState('');
   const [newFoodProtein, setNewFoodProtein] = useState('');
   const [newFoodCarbs, setNewFoodCarbs] = useState('');
@@ -60,6 +62,17 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
     }, 100);
     return () => clearTimeout(t);
   }, []);
+
+  // kJ -> kcal auto conversion
+  const handleKjChange = (val: string) => {
+    setNewFoodKj(val);
+    const num = parseFloat(val);
+    if (!isNaN(num) && num >= 0) {
+      setNewFoodCal(String(Math.round(num / 4.184)));
+    } else {
+      setNewFoodCal('');
+    }
+  };
 
   // When selected food changes, initialize portions & liquid unit
   const handleSelectFood = (food: FoodItem) => {
@@ -85,6 +98,22 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
     setCustomCarbs(String(portion.carbs));
     setCustomFat(String(portion.fat));
     setIsCustomizingNutrients(false);
+  };
+
+  // Handle single portion gram weight input change
+  const handleServingUnitWeightChange = (newWeight: number) => {
+    const validWeight = Math.max(1, newWeight);
+    setServingUnitWeight(validWeight);
+    const newTotal = Math.round(validWeight * servingCount);
+    setTotalGrams(newTotal);
+
+    if (selectedFood) {
+      const portion = calculatePortion(selectedFood.per100g, newTotal);
+      setCustomCal(String(portion.calories));
+      setCustomProtein(String(portion.protein));
+      setCustomCarbs(String(portion.carbs));
+      setCustomFat(String(portion.fat));
+    }
   };
 
   // Sync portion count change
@@ -161,7 +190,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
       toast.error('请输入食物名称');
       return;
     }
-    const cal = parseInt(newFoodCal) || 0;
+    const cal = parseInt(newFoodCal) || Math.round((parseFloat(newFoodKj) || 0) / 4.184) || 0;
     const g = parseFloat(newFoodGrams) || 100;
     const p = parseFloat(newFoodProtein) || 0;
     const c = parseFloat(newFoodCarbs) || 0;
@@ -178,11 +207,16 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
       carbs: Math.round(c * ratioTo100 * 10) / 10,
     };
 
+    // Generate real pinyin index for fuzzy search
+    const pyFull = pinyin(newFoodName.trim(), { toneType: 'none', type: 'array' }).join('');
+    const pyAcronym = pinyin(newFoodName.trim(), { pattern: 'first', toneType: 'none', type: 'array' }).join('');
+    const pinyinIndex = `${pyAcronym} ${pyFull}`;
+
     if (saveToLibrary) {
       await db.foods.add({
         id: foodId,
         name: newFoodName.trim(),
-        pinyinIndex: 'zdy',
+        pinyinIndex,
         category: newFoodCategory,
         source: 'USER_CUSTOM',
         defaultUnit: newFoodUnit,
@@ -393,22 +427,36 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                 />
               </div>
 
-              {/* 4 Macros */}
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
-                    总热量 (kcal)
+              {/* Energy in kJ with auto kcal conversion */}
+              <div className="bg-[var(--color-bg-secondary)]/60 p-3 rounded-2xl border border-[var(--color-divider)]">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-bold text-[var(--color-text-primary)]">
+                    能量 (kJ 千焦)
                   </label>
+                  <div className="text-xs font-black text-[var(--color-calories)] bg-[var(--color-calories)]/10 px-2.5 py-0.5 rounded-lg flex items-center gap-1">
+                    <span className="text-[10px] text-[var(--color-text-secondary)] font-normal">自动换算:</span>
+                    <span>{newFoodCal ? `≈ ${newFoodCal} kcal` : '-- kcal'}</span>
+                  </div>
+                </div>
+                <div className="relative flex items-center">
                   <input
                     type="number"
-                    placeholder="如 200"
-                    value={newFoodCal}
-                    onChange={(e) => setNewFoodCal(e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-sm font-bold text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                    inputMode="numeric"
+                    placeholder="如 840 (包装标签能量数值)"
+                    value={newFoodKj}
+                    onChange={(e) => handleKjChange(e.target.value)}
+                    className="w-full px-3 py-2 text-base font-bold text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-divider)] pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-calories)]/30"
                   />
+                  <span className="absolute right-3 text-xs font-bold text-[var(--color-text-secondary)] pointer-events-none">
+                    kJ
+                  </span>
                 </div>
+              </div>
+
+              {/* 3 Macros */}
+              <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1 text-center font-medium">
                     蛋白质 (g)
                   </label>
                   <input
@@ -417,11 +465,11 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                     placeholder="如 15"
                     value={newFoodProtein}
                     onChange={(e) => setNewFoodProtein(e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-sm font-bold text-[#FB7185] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                    className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#FB7185] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1 text-center font-medium">
                     碳水化合物 (g)
                   </label>
                   <input
@@ -430,11 +478,11 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                     placeholder="如 25"
                     value={newFoodCarbs}
                     onChange={(e) => setNewFoodCarbs(e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-sm font-bold text-[#10B981] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                    className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#10B981] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1 text-center font-medium">
                     脂肪 (g)
                   </label>
                   <input
@@ -443,7 +491,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                     placeholder="如 5"
                     value={newFoodFat}
                     onChange={(e) => setNewFoodFat(e.target.value)}
-                    className="w-full px-2.5 py-1.5 text-sm font-bold text-[#FBBF24] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                    className="w-full py-1.5 px-2 text-center text-sm font-bold text-[#FBBF24] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
                   />
                 </div>
               </div>
@@ -482,8 +530,12 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                   <div>
                     <h3 className="font-bold text-base">{selectedFood.name}</h3>
                     <p className="text-xs text-[var(--color-text-secondary)]">
-                      {selectedFood.source === 'USDA' ? 'USDA 官方库' : '中国食物成分表'} ·{' '}
-                      {selectedFood.per100g.calories} kcal / 100{unit}
+                      {selectedFood.source === 'USER_CUSTOM'
+                        ? '⭐ 自定义食物'
+                        : selectedFood.source === 'USDA'
+                        ? 'USDA 官方库'
+                        : '中国食物成分表'}{' '}
+                      · {selectedFood.per100g.calories} kcal / 100{unit}
                     </p>
                   </div>
                 </div>
@@ -526,56 +578,65 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                 </div>
               </div>
 
-              {/* Requirement: Separate portion unit weight and count */}
-              <div>
-                <label className="text-xs text-[var(--color-text-secondary)] font-medium block mb-2">
-                  1. 选择单份规格：
-                </label>
-                <div className="flex flex-wrap gap-2">
+              {/* Requirement: Single portion weight input with quick presets */}
+              <div className="bg-[var(--color-bg-secondary)]/50 p-3.5 rounded-2xl border border-[var(--color-divider)] space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-[var(--color-text-primary)]">
+                    1. 输入单份重量 / 规格：
+                  </label>
+                  <span className="text-[11px] text-[var(--color-text-secondary)]">
+                    单份克数自己输入
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="number"
+                      min="1"
+                      step="1"
+                      placeholder="单份克数"
+                      value={servingUnitWeight || ''}
+                      onChange={(e) => handleServingUnitWeightChange(parseFloat(e.target.value) || 0)}
+                      className="w-full py-2 px-3 text-lg font-black text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-divider)] text-center focus:outline-none focus:ring-2 focus:ring-[var(--color-calories)]/30 pr-10"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--color-text-secondary)] pointer-events-none">
+                      {unit}
+                    </span>
+                  </div>
+                  <span className="text-xs text-[var(--color-text-secondary)] font-medium">/ 份</span>
+                </div>
+
+                {/* Common Presets */}
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="text-[11px] text-[var(--color-text-secondary)] mr-0.5">快捷预设:</span>
                   {selectedFood.commonServings?.map((s) => (
                     <button
                       key={s.label}
+                      type="button"
                       onClick={() => {
-                        setServingUnitWeight(s.grams);
-                        const cleanLabel = s.label.replace(/[0-9(gml)]/gi, '').trim() || '份';
-                        setServingLabel(cleanLabel);
-                        const newTotal = s.grams * servingCount;
-                        setTotalGrams(newTotal);
-                        if (selectedFood) {
-                          const portion = calculatePortion(selectedFood.per100g, newTotal);
-                          setCustomCal(String(portion.calories));
-                          setCustomProtein(String(portion.protein));
-                          setCustomCarbs(String(portion.carbs));
-                          setCustomFat(String(portion.fat));
-                        }
+                        setServingLabel(s.label.replace(/[0-9(gml)]/gi, '').trim() || '份');
+                        handleServingUnitWeightChange(s.grams);
                       }}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all ${
                         servingUnitWeight === s.grams
                           ? 'bg-[var(--color-calories)] text-white border-[var(--color-calories)] shadow-xs'
-                          : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border-[var(--color-divider)]'
+                          : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border-[var(--color-divider)]'
                       }`}
                     >
                       {s.label} ({s.grams}{unit})
                     </button>
                   ))}
                   <button
+                    type="button"
                     onClick={() => {
-                      setServingUnitWeight(100);
                       setServingLabel('份');
-                      const newTotal = 100 * servingCount;
-                      setTotalGrams(newTotal);
-                      if (selectedFood) {
-                        const portion = calculatePortion(selectedFood.per100g, newTotal);
-                        setCustomCal(String(portion.calories));
-                        setCustomProtein(String(portion.protein));
-                        setCustomCarbs(String(portion.carbs));
-                        setCustomFat(String(portion.fat));
-                      }
+                      handleServingUnitWeightChange(100);
                     }}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all ${
                       servingUnitWeight === 100
                         ? 'bg-[var(--color-calories)] text-white border-[var(--color-calories)] shadow-xs'
-                        : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-secondary)] border-[var(--color-divider)]'
+                        : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] border-[var(--color-divider)]'
                     }`}
                   >
                     基准 100{unit}
@@ -583,33 +644,35 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                 </div>
               </div>
 
-              {/* Requirement: Stepper for count and total weight separated */}
-              <div className="bg-[var(--color-bg-secondary)]/60 p-3.5 rounded-2xl border border-[var(--color-divider)] space-y-3">
+              {/* Requirement: Select portion count and total weight */}
+              <div className="bg-[var(--color-bg-secondary)]/50 p-3.5 rounded-2xl border border-[var(--color-divider)] space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-[var(--color-text-primary)]">
                     2. 食用份数与总重：
                   </span>
                   <div className="flex gap-1">
-                    {[0.5, 1, 2, 3].map((num) => (
+                    {[0.5, 1, 1.5, 2, 3].map((num) => (
                       <button
                         key={num}
+                        type="button"
                         onClick={() => handleServingCountChange(num)}
-                        className={`text-xs px-2 py-0.5 rounded-lg font-bold ${
+                        className={`text-xs px-2 py-0.5 rounded-lg font-bold transition-all ${
                           servingCount === num
                             ? 'bg-[var(--color-calories)] text-white'
                             : 'bg-[var(--color-bg-card)] text-[var(--color-text-secondary)]'
                         }`}
                       >
-                        {num}{servingLabel}
+                        {num}份
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Count Stepper */}
+                {/* Count Stepper & Total Weight */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-1.5 bg-[var(--color-bg-card)] p-1 rounded-2xl border border-[var(--color-divider)]">
                     <button
+                      type="button"
                       onClick={() => handleServingCountChange(servingCount - (servingCount > 1 ? 1 : 0.5))}
                       className="w-8 h-8 rounded-xl bg-[var(--color-bg-secondary)] text-sm font-bold flex items-center justify-center active:scale-95"
                     >
@@ -617,16 +680,17 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                     </button>
                     <input
                       type="number"
-                      step="0.5"
+                      step="0.1"
                       min="0.1"
                       value={servingCount}
                       onChange={(e) => handleServingCountChange(parseFloat(e.target.value) || 1)}
-                      className="w-12 text-center font-bold text-base bg-transparent"
+                      className="w-14 text-center font-bold text-base bg-transparent focus:outline-none"
                     />
                     <span className="text-xs text-[var(--color-text-secondary)] pr-1 font-semibold">
-                      {servingLabel}
+                      份
                     </span>
                     <button
+                      type="button"
                       onClick={() => handleServingCountChange(servingCount + (servingCount >= 1 ? 1 : 0.5))}
                       className="w-8 h-8 rounded-xl bg-[var(--color-bg-secondary)] text-sm font-bold flex items-center justify-center active:scale-95"
                     >
@@ -634,7 +698,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                     </button>
                   </div>
 
-                  {/* Total Weight Display */}
+                  {/* Total Weight Display & Input */}
                   <div className="flex-1 text-right">
                     <div className="text-[11px] text-[var(--color-text-secondary)]">总重量 / 体积</div>
                     <div className="flex items-baseline justify-end gap-1">
@@ -642,7 +706,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                         type="number"
                         value={totalGrams}
                         onChange={(e) => handleTotalGramsChange(Number(e.target.value))}
-                        className="w-18 text-right font-black text-xl text-[var(--color-text-primary)] bg-transparent border-b border-dashed border-[var(--color-divider)]"
+                        className="w-20 text-right font-black text-xl text-[var(--color-text-primary)] bg-transparent border-b border-dashed border-[var(--color-divider)] focus:outline-none"
                       />
                       <span className="text-sm font-bold text-[var(--color-text-secondary)]">{unit}</span>
                     </div>
@@ -651,7 +715,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
 
                 {/* Real-time Formula summary pill */}
                 <div className="p-2 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-divider)] text-center text-xs font-semibold text-[var(--color-calories)]">
-                  💡 {selectedFood.name}：{servingUnitWeight}{unit}/{servingLabel} × {servingCount}{servingLabel} ＝ 总重 {totalGrams} {unit}
+                  💡 {selectedFood.name}：单份 {servingUnitWeight}{unit} × {servingCount}份 ＝ 总重 {totalGrams} {unit}
                 </div>
               </div>
 
@@ -741,7 +805,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                 onClick={handleAddSelectedFood}
                 className="w-full py-3.5 rounded-2xl bg-[var(--color-calories)] text-white font-bold text-sm shadow-md hover:opacity-95 active:scale-98 transition-all"
               >
-                ✅ 记录 {servingCount}{servingLabel} ({totalGrams}{unit}) 到今日{MEAL_META[currentMeal].label}
+                ✅ 记录 {servingCount}份 ({totalGrams}{unit}) 到今日{MEAL_META[currentMeal].label}
               </button>
             </motion.div>
           ) : (
@@ -764,7 +828,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                         : '自定义录入新食物（支持指定克或毫升）'}
                     </div>
                     <div className="text-[10px] text-[var(--color-text-secondary)]">
-                      自由输入能量、蛋白质、碳水和脂肪数据
+                      支持 kJ 自动换算大卡，自由输入营养数据
                     </div>
                   </div>
                 </div>
@@ -791,6 +855,7 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                 {displayFoods.map((food) => {
                   const isLiq = food.isLiquid || food.defaultUnit === 'ml' || detectIsLiquid(food.name);
                   const displayUnit = isLiq ? 'ml' : 'g';
+                  const isUserCustom = food.source === 'USER_CUSTOM';
                   return (
                     <div
                       key={food.id}
@@ -802,8 +867,15 @@ export function FoodSearchPanel({ mealType: initialMealType, onClose }: FoodSear
                           {CATEGORY_META[food.category]?.emoji ?? '🥗'}
                         </span>
                         <div className="min-w-0">
-                          <div className="text-[15px] font-semibold text-[var(--color-text-primary)] truncate">
-                            {food.name}
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[15px] font-semibold text-[var(--color-text-primary)] truncate">
+                              {food.name}
+                            </span>
+                            {isUserCustom && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold shrink-0">
+                                自定义
+                              </span>
+                            )}
                           </div>
                           <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">
                             {food.per100g.calories} kcal / 100{displayUnit} · 蛋白质 {food.per100g.protein}g ·

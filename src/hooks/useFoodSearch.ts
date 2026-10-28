@@ -1,39 +1,33 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import Fuse from 'fuse.js';
 import type { FoodItem } from '@/types';
 import { db } from '@/db';
 
 export function useFoodSearch() {
-  const [foods, setFoods] = useState<FoodItem[]>([]);
+  const allFoods = useLiveQuery(() => db.foods.toArray(), []) ?? [];
+  const recentFoods = (
+    useLiveQuery(
+      () => db.foods.orderBy('lastUsedAt').reverse().limit(20).toArray(),
+      [],
+    ) ?? []
+  ).filter((f) => f.lastUsedAt);
+
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<FoodItem[]>([]);
-  const [recentFoods, setRecentFoods] = useState<FoodItem[]>([]);
-
-  useEffect(() => {
-    db.foods.toArray().then(setFoods);
-  }, []);
-
-  useEffect(() => {
-    db.foods
-      .orderBy('lastUsedAt')
-      .reverse()
-      .limit(10)
-      .toArray()
-      .then((items) => setRecentFoods(items.filter((f) => f.lastUsedAt)));
-  }, []);
 
   const fuse = useMemo(
     () =>
-      new Fuse(foods, {
+      new Fuse(allFoods, {
         keys: [
           { name: 'name', weight: 0.5 },
-          { name: 'pinyinIndex', weight: 0.3 },
-          { name: 'nameEn', weight: 0.2 },
+          { name: 'pinyinIndex', weight: 0.35 },
+          { name: 'nameEn', weight: 0.15 },
         ],
-        threshold: 0.3,
+        threshold: 0.35,
         minMatchCharLength: 1,
       }),
-    [foods],
+    [allFoods],
   );
 
   const search = useCallback(
@@ -43,11 +37,11 @@ export function useFoodSearch() {
         setResults([]);
         return;
       }
-      const searchResults = fuse.search(q, { limit: 20 });
+      const searchResults = fuse.search(q, { limit: 50 });
       setResults(searchResults.map((r) => r.item));
     },
     [fuse],
   );
 
-  return { query, search, results, recentFoods, setQuery };
+  return { query, search, results, recentFoods, allFoods, setQuery };
 }
