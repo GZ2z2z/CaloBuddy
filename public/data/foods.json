@@ -1,0 +1,1128 @@
+[
+  {
+    "id": "rice_white",
+    "name": "白米饭",
+    "nameEn": "White Rice (Cooked)",
+    "pinyinIndex": "bmf",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 116, "protein": 2.6, "fat": 0.3, "carbs": 25.9, "fiber": 0.3, "sodium": 1 },
+    "commonServings": [
+      { "label": "1小碗", "grams": 150 },
+      { "label": "1标准碗", "grams": 200 },
+      { "label": "1大碗", "grams": 300 }
+    ]
+  },
+  {
+    "id": "rice_brown",
+    "name": "糙米饭",
+    "nameEn": "Brown Rice (Cooked)",
+    "pinyinIndex": "cmf",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 111, "protein": 2.6, "fat": 0.9, "carbs": 23.0, "fiber": 1.8, "sodium": 1 },
+    "commonServings": [
+      { "label": "1小碗", "grams": 150 },
+      { "label": "1标准碗", "grams": 200 }
+    ]
+  },
+  {
+    "id": "oats",
+    "name": "燕麦",
+    "nameEn": "Oats",
+    "pinyinIndex": "ym",
+    "category": "staple",
+    "source": "USDA",
+    "per100g": { "calories": 379, "protein": 13.5, "fat": 6.5, "carbs": 67.7, "fiber": 10.6, "sodium": 2 },
+    "commonServings": [
+      { "label": "1份", "grams": 30 },
+      { "label": "1大份", "grams": 50 }
+    ]
+  },
+  {
+    "id": "bread_whole_wheat",
+    "name": "全麦面包",
+    "nameEn": "Whole Wheat Bread",
+    "pinyinIndex": "qmmb",
+    "category": "staple",
+    "source": "USDA",
+    "per100g": { "calories": 247, "protein": 13.0, "fat": 3.4, "carbs": 41.3, "fiber": 6.8, "sodium": 450 },
+    "commonServings": [
+      { "label": "1片", "grams": 25 },
+      { "label": "2片", "grams": 50 }
+    ]
+  },
+  {
+    "id": "sweet_potato",
+    "name": "红薯",
+    "nameEn": "Sweet Potato",
+    "pinyinIndex": "hs",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 86, "protein": 1.6, "fat": 0.1, "carbs": 20.1, "fiber": 3.0, "sodium": 55 },
+    "commonServings": [
+      { "label": "1个中等", "grams": 200 }
+    ]
+  },
+  {
+    "id": "corn",
+    "name": "玉米",
+    "nameEn": "Corn",
+    "pinyinIndex": "ym",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 112, "protein": 4.0, "fat": 1.2, "carbs": 22.8, "fiber": 2.9, "sodium": 15 },
+    "commonServings": [
+      { "label": "1根", "grams": 200 }
+    ]
+  },
+  {
+    "id": "mantou",
+    "name": "馒头",
+    "nameEn": "Steamed Bun",
+    "pinyinIndex": "mt",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 223, "protein": 7.0, "fat": 1.1, "carbs": 47.0, "fiber": 1.3, "sodium": 230 },
+    "commonServings": [
+      { "label": "1个", "grams": 100 }
+    ]
+  },
+  {
+    "id": "noodles_raw",
+    "name": "面条（生）",
+    "nameEn": "Noodles (Raw)",
+    "pinyinIndex": "mt",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 280, "protein": 8.3, "fat": 1.1, "carbs": 57.5, "fiber": 1.5, "sodium": 5 },
+    "commonServings": [
+      { "label": "1人份", "grams": 100 },
+      { "label": "1大份", "grams": 150 }
+    ]
+  },
+  {
+    "id": "purple_sweet_potato",
+    "name": "紫薯",
+    "nameEn": "Purple Sweet Potato",
+    "pinyinIndex": "zs",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 82, "protein": 1.6, "fat": 0.2, "carbs": 18.8, "fiber": 2.0, "sodium": 20 },
+    "commonServings": [
+      { "label": "1个", "grams": 150 }
+    ]
+  },
+  {
+    "id": "potato",
+    "name": "土豆",
+    "nameEn": "Potato",
+    "pinyinIndex": "td",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 76, "protein": 2.0, "fat": 0.1, "carbs": 17.5, "fiber": 2.2, "sodium": 6 },
+    "commonServings": [
+      { "label": "1个中等", "grams": 150 }
+    ]
+  },
+  {
+    "id": "taro",
+    "name": "芋头",
+    "nameEn": "Taro",
+    "pinyinIndex": "yt",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 56, "protein": 1.5, "fat": 0.2, "carbs": 12.7, "fiber": 1.0, "sodium": 33 },
+    "commonServings": [
+      { "label": "1个中等", "grams": 150 }
+    ]
+  },
+  {
+    "id": "chicken_breast",
+    "name": "鸡胸肉",
+    "nameEn": "Chicken Breast",
+    "pinyinIndex": "jxr",
+    "category": "meat",
+    "source": "USDA",
+    "per100g": { "calories": 165, "protein": 31.0, "fat": 3.6, "carbs": 0, "fiber": 0, "sodium": 74 },
+    "commonServings": [
+      { "label": "1小块", "grams": 100 },
+      { "label": "1整块", "grams": 150 },
+      { "label": "1大块", "grams": 200 }
+    ]
+  },
+  {
+    "id": "beef_shank",
+    "name": "牛腱",
+    "nameEn": "Beef Shank",
+    "pinyinIndex": "nj",
+    "category": "meat",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 106, "protein": 20.1, "fat": 2.5, "carbs": 0, "fiber": 0, "sodium": 60 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 },
+      { "label": "1大份", "grams": 150 }
+    ]
+  },
+  {
+    "id": "pork_tenderloin",
+    "name": "猪里脊",
+    "nameEn": "Pork Tenderloin",
+    "pinyinIndex": "zlj",
+    "category": "meat",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 143, "protein": 20.2, "fat": 7.1, "carbs": 0, "fiber": 0, "sodium": 44 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "chicken_thigh_skinless",
+    "name": "鸡腿肉(去皮)",
+    "nameEn": "Chicken Thigh (Skinless)",
+    "pinyinIndex": "jtr",
+    "category": "meat",
+    "source": "USDA",
+    "per100g": { "calories": 127, "protein": 19.6, "fat": 5.3, "carbs": 0, "fiber": 0, "sodium": 84 },
+    "commonServings": [
+      { "label": "1个", "grams": 100 }
+    ]
+  },
+  {
+    "id": "beef_lean",
+    "name": "牛肉(瘦)",
+    "nameEn": "Lean Beef",
+    "pinyinIndex": "nr",
+    "category": "meat",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 106, "protein": 20.2, "fat": 2.3, "carbs": 1.2, "fiber": 0, "sodium": 53 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 },
+      { "label": "1大份", "grams": 200 }
+    ]
+  },
+  {
+    "id": "pork_lean",
+    "name": "猪瘦肉",
+    "nameEn": "Lean Pork",
+    "pinyinIndex": "zsr",
+    "category": "meat",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 143, "protein": 20.3, "fat": 6.2, "carbs": 1.5, "fiber": 0, "sodium": 57 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "duck_breast",
+    "name": "鸭胸肉",
+    "nameEn": "Duck Breast",
+    "pinyinIndex": "yxr",
+    "category": "meat",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 90, "protein": 17.3, "fat": 1.8, "carbs": 0.8, "fiber": 0, "sodium": 65 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "lamb_leg",
+    "name": "羊腿肉",
+    "nameEn": "Lamb Leg",
+    "pinyinIndex": "ytr",
+    "category": "meat",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 110, "protein": 19.7, "fat": 3.4, "carbs": 0, "fiber": 0, "sodium": 68 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "salmon",
+    "name": "三文鱼",
+    "nameEn": "Salmon",
+    "pinyinIndex": "swy",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 208, "protein": 20.4, "fat": 13.4, "carbs": 0, "fiber": 0, "sodium": 59 },
+    "commonServings": [
+      { "label": "1块", "grams": 100 }
+    ]
+  },
+  {
+    "id": "cod",
+    "name": "鳕鱼",
+    "nameEn": "Cod",
+    "pinyinIndex": "xy",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 82, "protein": 17.8, "fat": 0.7, "carbs": 0, "fiber": 0, "sodium": 54 },
+    "commonServings": [
+      { "label": "1块", "grams": 100 }
+    ]
+  },
+  {
+    "id": "shrimp",
+    "name": "虾仁",
+    "nameEn": "Shrimp",
+    "pinyinIndex": "xr",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 94, "protein": 20.3, "fat": 0.7, "carbs": 0.2, "fiber": 0, "sodium": 111 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "tuna_canned",
+    "name": "金枪鱼罐头",
+    "nameEn": "Canned Tuna",
+    "pinyinIndex": "jqygt",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 116, "protein": 25.5, "fat": 0.8, "carbs": 0, "fiber": 0, "sodium": 338 },
+    "commonServings": [
+      { "label": "1罐", "grams": 80 }
+    ]
+  },
+  {
+    "id": "sea_bass",
+    "name": "鲈鱼",
+    "nameEn": "Sea Bass",
+    "pinyinIndex": "ly",
+    "category": "seafood",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 105, "protein": 18.6, "fat": 3.4, "carbs": 0, "fiber": 0, "sodium": 56 },
+    "commonServings": [
+      { "label": "1条", "grams": 200 }
+    ]
+  },
+  {
+    "id": "hairtail",
+    "name": "带鱼",
+    "nameEn": "Hairtail Fish",
+    "pinyinIndex": "dy",
+    "category": "seafood",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 127, "protein": 17.7, "fat": 4.9, "carbs": 3.1, "fiber": 0, "sodium": 150 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "egg_whole",
+    "name": "鸡蛋",
+    "nameEn": "Whole Egg",
+    "pinyinIndex": "jd",
+    "category": "egg",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 144, "protein": 13.3, "fat": 8.8, "carbs": 2.8, "fiber": 0, "sodium": 131 },
+    "commonServings": [
+      { "label": "1个全蛋", "grams": 50 },
+      { "label": "2个", "grams": 100 }
+    ]
+  },
+  {
+    "id": "egg_white",
+    "name": "蛋白",
+    "nameEn": "Egg White",
+    "pinyinIndex": "db",
+    "category": "egg",
+    "source": "USDA",
+    "per100g": { "calories": 47, "protein": 11.1, "fat": 0, "carbs": 0.7, "fiber": 0, "sodium": 166 },
+    "commonServings": [
+      { "label": "1个蛋白", "grams": 33 }
+    ]
+  },
+  {
+    "id": "quail_egg",
+    "name": "鹌鹑蛋",
+    "nameEn": "Quail Egg",
+    "pinyinIndex": "acd",
+    "category": "egg",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 160, "protein": 12.8, "fat": 11.1, "carbs": 2.1, "fiber": 0, "sodium": 106 },
+    "commonServings": [
+      { "label": "1个", "grams": 10 },
+      { "label": "5个", "grams": 50 }
+    ]
+  },
+  {
+    "id": "milk_skim",
+    "name": "脱脂牛奶",
+    "nameEn": "Skim Milk",
+    "pinyinIndex": "tznn",
+    "category": "dairy",
+    "source": "USDA",
+    "per100g": { "calories": 34, "protein": 3.4, "fat": 0.1, "carbs": 5.0, "fiber": 0, "sodium": 42 },
+    "commonServings": [
+      { "label": "1杯", "grams": 200 },
+      { "label": "1盒", "grams": 250 }
+    ]
+  },
+  {
+    "id": "milk_whole",
+    "name": "全脂牛奶",
+    "nameEn": "Whole Milk",
+    "pinyinIndex": "qznn",
+    "category": "dairy",
+    "source": "USDA",
+    "per100g": { "calories": 65, "protein": 3.2, "fat": 3.6, "carbs": 4.8, "fiber": 0, "sodium": 44 },
+    "commonServings": [
+      { "label": "1杯", "grams": 200 },
+      { "label": "1盒", "grams": 250 }
+    ]
+  },
+  {
+    "id": "greek_yogurt_nonfat",
+    "name": "希腊酸奶(脱脂)",
+    "nameEn": "Greek Yogurt (Nonfat)",
+    "pinyinIndex": "xlsn",
+    "category": "dairy",
+    "source": "USDA",
+    "per100g": { "calories": 59, "protein": 10.0, "fat": 0.7, "carbs": 3.6, "fiber": 0, "sodium": 36 },
+    "commonServings": [
+      { "label": "1杯", "grams": 150 }
+    ]
+  },
+  {
+    "id": "cheese",
+    "name": "奶酪/芝士",
+    "nameEn": "Cheese",
+    "pinyinIndex": "nl",
+    "category": "dairy",
+    "source": "USDA",
+    "per100g": { "calories": 328, "protein": 25.0, "fat": 23.0, "carbs": 3.2, "fiber": 0, "sodium": 621 },
+    "commonServings": [
+      { "label": "1片", "grams": 20 }
+    ]
+  },
+  {
+    "id": "whey_protein",
+    "name": "乳清蛋白粉",
+    "nameEn": "Whey Protein Powder",
+    "pinyinIndex": "rqdbf",
+    "category": "dairy",
+    "source": "USDA",
+    "per100g": { "calories": 390, "protein": 80.0, "fat": 3.0, "carbs": 8.0, "fiber": 0, "sodium": 200 },
+    "commonServings": [
+      { "label": "1勺", "grams": 30 }
+    ]
+  },
+  {
+    "id": "tofu",
+    "name": "豆腐",
+    "nameEn": "Tofu",
+    "pinyinIndex": "df",
+    "category": "soy",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 73, "protein": 8.1, "fat": 3.7, "carbs": 2.8, "fiber": 0.4, "sodium": 7 },
+    "commonServings": [
+      { "label": "1块", "grams": 150 }
+    ]
+  },
+  {
+    "id": "soy_milk_unsweetened",
+    "name": "豆浆(无糖)",
+    "nameEn": "Soy Milk (Unsweetened)",
+    "pinyinIndex": "dj",
+    "category": "soy",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 31, "protein": 2.9, "fat": 1.6, "carbs": 1.1, "fiber": 0.1, "sodium": 1 },
+    "commonServings": [
+      { "label": "1杯", "grams": 250 }
+    ]
+  },
+  {
+    "id": "edamame",
+    "name": "毛豆",
+    "nameEn": "Edamame",
+    "pinyinIndex": "md",
+    "category": "soy",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 131, "protein": 13.1, "fat": 5.0, "carbs": 10.5, "fiber": 5.2, "sodium": 6 },
+    "commonServings": [
+      { "label": "1把", "grams": 50 }
+    ]
+  },
+  {
+    "id": "dried_tofu",
+    "name": "豆腐干",
+    "nameEn": "Dried Tofu",
+    "pinyinIndex": "dfg",
+    "category": "soy",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 140, "protein": 16.2, "fat": 3.6, "carbs": 10.5, "fiber": 0.8, "sodium": 50 },
+    "commonServings": [
+      { "label": "1块", "grams": 50 }
+    ]
+  },
+  {
+    "id": "tofu_skin",
+    "name": "豆皮",
+    "nameEn": "Tofu Skin",
+    "pinyinIndex": "dp",
+    "category": "soy",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 409, "protein": 44.6, "fat": 17.4, "carbs": 18.8, "fiber": 0.2, "sodium": 9 },
+    "commonServings": [
+      { "label": "1张", "grams": 50 }
+    ]
+  },
+  {
+    "id": "broccoli",
+    "name": "西兰花",
+    "nameEn": "Broccoli",
+    "pinyinIndex": "xlh",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 34, "protein": 2.8, "fat": 0.4, "carbs": 6.6, "fiber": 2.6, "sodium": 33 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 },
+      { "label": "1大份", "grams": 200 }
+    ]
+  },
+  {
+    "id": "spinach",
+    "name": "菠菜",
+    "nameEn": "Spinach",
+    "pinyinIndex": "bc",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 23, "protein": 2.9, "fat": 0.4, "carbs": 3.6, "fiber": 2.2, "sodium": 79 },
+    "commonServings": [
+      { "label": "1把", "grams": 100 }
+    ]
+  },
+  {
+    "id": "lettuce",
+    "name": "生菜",
+    "nameEn": "Lettuce",
+    "pinyinIndex": "sc",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 15, "protein": 1.4, "fat": 0.2, "carbs": 2.9, "fiber": 1.3, "sodium": 28 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "tomato",
+    "name": "番茄",
+    "nameEn": "Tomato",
+    "pinyinIndex": "fq",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 18, "protein": 0.9, "fat": 0.2, "carbs": 3.9, "fiber": 1.2, "sodium": 5 },
+    "commonServings": [
+      { "label": "1个", "grams": 150 }
+    ]
+  },
+  {
+    "id": "cucumber",
+    "name": "黄瓜",
+    "nameEn": "Cucumber",
+    "pinyinIndex": "hg",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 16, "protein": 0.7, "fat": 0.1, "carbs": 3.6, "fiber": 0.5, "sodium": 2 },
+    "commonServings": [
+      { "label": "1根", "grams": 200 }
+    ]
+  },
+  {
+    "id": "celery",
+    "name": "芹菜",
+    "nameEn": "Celery",
+    "pinyinIndex": "qc",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 16, "protein": 0.7, "fat": 0.1, "carbs": 3.3, "fiber": 1.6, "sodium": 80 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "carrot",
+    "name": "胡萝卜",
+    "nameEn": "Carrot",
+    "pinyinIndex": "hlb",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 41, "protein": 0.9, "fat": 0.2, "carbs": 9.6, "fiber": 2.8, "sodium": 69 },
+    "commonServings": [
+      { "label": "1根", "grams": 150 }
+    ]
+  },
+  {
+    "id": "chinese_cabbage",
+    "name": "白菜",
+    "nameEn": "Chinese Cabbage",
+    "pinyinIndex": "bc",
+    "category": "vegetable",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 13, "protein": 1.1, "fat": 0.2, "carbs": 2.2, "fiber": 0.8, "sodium": 57 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "mushroom",
+    "name": "蘑菇",
+    "nameEn": "Mushroom",
+    "pinyinIndex": "mg",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 22, "protein": 3.1, "fat": 0.3, "carbs": 3.3, "fiber": 1.0, "sodium": 5 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "cauliflower",
+    "name": "花椰菜",
+    "nameEn": "Cauliflower",
+    "pinyinIndex": "hyc",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 25, "protein": 1.9, "fat": 0.3, "carbs": 5.0, "fiber": 2.0, "sodium": 30 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "asparagus",
+    "name": "芦笋",
+    "nameEn": "Asparagus",
+    "pinyinIndex": "ls",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 20, "protein": 2.2, "fat": 0.1, "carbs": 3.9, "fiber": 2.1, "sodium": 2 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "green_pepper",
+    "name": "青椒",
+    "nameEn": "Green Pepper",
+    "pinyinIndex": "qj",
+    "category": "vegetable",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 20, "protein": 0.9, "fat": 0.2, "carbs": 4.6, "fiber": 1.7, "sodium": 3 },
+    "commonServings": [
+      { "label": "1个", "grams": 100 }
+    ]
+  },
+  {
+    "id": "apple",
+    "name": "苹果",
+    "nameEn": "Apple",
+    "pinyinIndex": "pg",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 52, "protein": 0.3, "fat": 0.2, "carbs": 13.8, "fiber": 2.4, "sodium": 1 },
+    "commonServings": [
+      { "label": "1个小果", "grams": 150 },
+      { "label": "1个中果", "grams": 200 }
+    ]
+  },
+  {
+    "id": "banana",
+    "name": "香蕉",
+    "nameEn": "Banana",
+    "pinyinIndex": "xj",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 89, "protein": 1.1, "fat": 0.3, "carbs": 22.8, "fiber": 2.6, "sodium": 1 },
+    "commonServings": [
+      { "label": "1根中等", "grams": 120 }
+    ]
+  },
+  {
+    "id": "blueberry",
+    "name": "蓝莓",
+    "nameEn": "Blueberry",
+    "pinyinIndex": "lm",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 57, "protein": 0.7, "fat": 0.3, "carbs": 14.5, "fiber": 2.4, "sodium": 1 },
+    "commonServings": [
+      { "label": "1份", "grams": 30 }
+    ]
+  },
+  {
+    "id": "orange",
+    "name": "橙子",
+    "nameEn": "Orange",
+    "pinyinIndex": "cz",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 47, "protein": 0.9, "fat": 0.1, "carbs": 11.7, "fiber": 2.4, "sodium": 0 },
+    "commonServings": [
+      { "label": "1个", "grams": 200 }
+    ]
+  },
+  {
+    "id": "avocado",
+    "name": "牛油果",
+    "nameEn": "Avocado",
+    "pinyinIndex": "nyg",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 160, "protein": 2.0, "fat": 14.7, "carbs": 8.5, "fiber": 6.7, "sodium": 7 },
+    "commonServings": [
+      { "label": "半个", "grams": 70 },
+      { "label": "1个", "grams": 140 }
+    ]
+  },
+  {
+    "id": "strawberry",
+    "name": "草莓",
+    "nameEn": "Strawberry",
+    "pinyinIndex": "cm",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 32, "protein": 0.7, "fat": 0.3, "carbs": 7.7, "fiber": 2.0, "sodium": 1 },
+    "commonServings": [
+      { "label": "5颗", "grams": 100 }
+    ]
+  },
+  {
+    "id": "kiwi",
+    "name": "猕猴桃",
+    "nameEn": "Kiwi",
+    "pinyinIndex": "mht",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 61, "protein": 1.1, "fat": 0.5, "carbs": 14.7, "fiber": 3.0, "sodium": 3 },
+    "commonServings": [
+      { "label": "1个", "grams": 100 }
+    ]
+  },
+  {
+    "id": "watermelon",
+    "name": "西瓜",
+    "nameEn": "Watermelon",
+    "pinyinIndex": "xg",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 30, "protein": 0.6, "fat": 0.2, "carbs": 7.6, "fiber": 0.4, "sodium": 1 },
+    "commonServings": [
+      { "label": "1块", "grams": 200 }
+    ]
+  },
+  {
+    "id": "grape",
+    "name": "葡萄",
+    "nameEn": "Grape",
+    "pinyinIndex": "pt",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 69, "protein": 0.7, "fat": 0.2, "carbs": 18.1, "fiber": 0.9, "sodium": 2 },
+    "commonServings": [
+      { "label": "1串", "grams": 150 }
+    ]
+  },
+  {
+    "id": "almond",
+    "name": "杏仁",
+    "nameEn": "Almond",
+    "pinyinIndex": "xr",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 579, "protein": 21.2, "fat": 49.9, "carbs": 21.6, "fiber": 12.5, "sodium": 1 },
+    "commonServings": [
+      { "label": "10颗", "grams": 15 },
+      { "label": "1把", "grams": 25 }
+    ]
+  },
+  {
+    "id": "walnut",
+    "name": "核桃",
+    "nameEn": "Walnut",
+    "pinyinIndex": "ht",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 654, "protein": 15.2, "fat": 65.2, "carbs": 13.7, "fiber": 6.7, "sodium": 2 },
+    "commonServings": [
+      { "label": "2个", "grams": 15 }
+    ]
+  },
+  {
+    "id": "peanut",
+    "name": "花生",
+    "nameEn": "Peanut",
+    "pinyinIndex": "hs",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 567, "protein": 25.8, "fat": 49.2, "carbs": 16.1, "fiber": 8.5, "sodium": 18 },
+    "commonServings": [
+      { "label": "1把", "grams": 20 }
+    ]
+  },
+  {
+    "id": "cashew",
+    "name": "腰果",
+    "nameEn": "Cashew",
+    "pinyinIndex": "yg",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 553, "protein": 18.2, "fat": 43.8, "carbs": 30.2, "fiber": 3.3, "sodium": 12 },
+    "commonServings": [
+      { "label": "10颗", "grams": 15 }
+    ]
+  },
+  {
+    "id": "chia_seed",
+    "name": "奇亚籽",
+    "nameEn": "Chia Seed",
+    "pinyinIndex": "qyz",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 486, "protein": 16.5, "fat": 30.7, "carbs": 42.1, "fiber": 34.4, "sodium": 16 },
+    "commonServings": [
+      { "label": "1勺", "grams": 10 }
+    ]
+  },
+  {
+    "id": "pumpkin_seed",
+    "name": "南瓜子",
+    "nameEn": "Pumpkin Seed",
+    "pinyinIndex": "ngz",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 559, "protein": 30.2, "fat": 49.1, "carbs": 10.7, "fiber": 6.0, "sodium": 7 },
+    "commonServings": [
+      { "label": "1把", "grams": 15 }
+    ]
+  },
+  {
+    "id": "olive_oil",
+    "name": "橄榄油",
+    "nameEn": "Olive Oil",
+    "pinyinIndex": "gly",
+    "category": "oil",
+    "source": "USDA",
+    "per100g": { "calories": 884, "protein": 0, "fat": 100, "carbs": 0, "fiber": 0, "sodium": 2 },
+    "commonServings": [
+      { "label": "1茶匙", "grams": 5 },
+      { "label": "1汤匙", "grams": 15 }
+    ]
+  },
+  {
+    "id": "peanut_oil",
+    "name": "花生油",
+    "nameEn": "Peanut Oil",
+    "pinyinIndex": "hsy",
+    "category": "oil",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 899, "protein": 0, "fat": 99.9, "carbs": 0, "fiber": 0, "sodium": 0 },
+    "commonServings": [
+      { "label": "1茶匙", "grams": 5 },
+      { "label": "1汤匙", "grams": 15 }
+    ]
+  },
+  {
+    "id": "sesame_oil",
+    "name": "芝麻油",
+    "nameEn": "Sesame Oil",
+    "pinyinIndex": "zmy",
+    "category": "oil",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 886, "protein": 0, "fat": 99.7, "carbs": 0, "fiber": 0, "sodium": 0 },
+    "commonServings": [
+      { "label": "1茶匙", "grams": 5 }
+    ]
+  },
+  {
+    "id": "butter",
+    "name": "黄油",
+    "nameEn": "Butter",
+    "pinyinIndex": "hy",
+    "category": "oil",
+    "source": "USDA",
+    "per100g": { "calories": 717, "protein": 0.9, "fat": 81.1, "carbs": 0.1, "fiber": 0, "sodium": 11 },
+    "commonServings": [
+      { "label": "1小块", "grams": 10 }
+    ]
+  },
+  {
+    "id": "coconut_oil",
+    "name": "椰子油",
+    "nameEn": "Coconut Oil",
+    "pinyinIndex": "yzy",
+    "category": "oil",
+    "source": "USDA",
+    "per100g": { "calories": 862, "protein": 0, "fat": 100, "carbs": 0, "fiber": 0, "sodium": 0 },
+    "commonServings": [
+      { "label": "1茶匙", "grams": 5 },
+      { "label": "1汤匙", "grams": 15 }
+    ]
+  },
+  {
+    "id": "protein_bar",
+    "name": "蛋白棒",
+    "nameEn": "Protein Bar",
+    "pinyinIndex": "dbb",
+    "category": "snack",
+    "source": "USDA",
+    "per100g": { "calories": 350, "protein": 30.0, "fat": 10.0, "carbs": 35.0, "fiber": 5.0, "sodium": 250 },
+    "commonServings": [
+      { "label": "1根", "grams": 45 }
+    ]
+  },
+  {
+    "id": "dark_chocolate_85",
+    "name": "黑巧克力(85%)",
+    "nameEn": "Dark Chocolate (85%)",
+    "pinyinIndex": "hqkl",
+    "category": "snack",
+    "source": "USDA",
+    "per100g": { "calories": 546, "protein": 9.7, "fat": 46.4, "carbs": 24.1, "fiber": 10.9, "sodium": 24 },
+    "commonServings": [
+      { "label": "1小块", "grams": 10 }
+    ]
+  },
+  {
+    "id": "americano",
+    "name": "美式咖啡",
+    "nameEn": "Americano",
+    "pinyinIndex": "mskf",
+    "category": "snack",
+    "source": "USDA",
+    "per100g": { "calories": 2, "protein": 0.1, "fat": 0, "carbs": 0, "fiber": 0, "sodium": 5 },
+    "commonServings": [
+      { "label": "1杯", "grams": 240 }
+    ]
+  },
+  {
+    "id": "diet_cola",
+    "name": "无糖可乐",
+    "nameEn": "Diet Cola",
+    "pinyinIndex": "wtkl",
+    "category": "snack",
+    "source": "USDA",
+    "per100g": { "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "fiber": 0, "sodium": 12 },
+    "commonServings": [
+      { "label": "1罐", "grams": 330 }
+    ]
+  },
+  {
+    "id": "yogurt_low_sugar",
+    "name": "酸奶(低糖)",
+    "nameEn": "Yogurt (Low Sugar)",
+    "pinyinIndex": "sn",
+    "category": "snack",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 72, "protein": 3.5, "fat": 2.7, "carbs": 8.9, "fiber": 0, "sodium": 50 },
+    "commonServings": [
+      { "label": "1杯", "grams": 200 }
+    ]
+  },
+  {
+    "id": "rice_cake",
+    "name": "年糕",
+    "nameEn": "Rice Cake",
+    "pinyinIndex": "ng",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 154, "protein": 3.3, "fat": 0.6, "carbs": 34.7, "fiber": 0.8, "sodium": 55 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "millet_porridge",
+    "name": "小米粥",
+    "nameEn": "Millet Porridge",
+    "pinyinIndex": "xmz",
+    "category": "staple",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 46, "protein": 1.4, "fat": 0.7, "carbs": 8.4, "fiber": 0.3, "sodium": 2 },
+    "commonServings": [
+      { "label": "1碗", "grams": 250 }
+    ]
+  },
+  {
+    "id": "turkey_breast",
+    "name": "火鸡胸肉",
+    "nameEn": "Turkey Breast",
+    "pinyinIndex": "hjxr",
+    "category": "meat",
+    "source": "USDA",
+    "per100g": { "calories": 135, "protein": 30.0, "fat": 1.0, "carbs": 0, "fiber": 0, "sodium": 46 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "tilapia",
+    "name": "罗非鱼",
+    "nameEn": "Tilapia",
+    "pinyinIndex": "lfy",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 96, "protein": 20.1, "fat": 1.7, "carbs": 0, "fiber": 0, "sodium": 52 },
+    "commonServings": [
+      { "label": "1片", "grams": 100 }
+    ]
+  },
+  {
+    "id": "crab_meat",
+    "name": "蟹肉",
+    "nameEn": "Crab Meat",
+    "pinyinIndex": "xr",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 87, "protein": 18.1, "fat": 1.1, "carbs": 0, "fiber": 0, "sodium": 395 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "pear",
+    "name": "梨",
+    "nameEn": "Pear",
+    "pinyinIndex": "l",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 57, "protein": 0.4, "fat": 0.1, "carbs": 15.2, "fiber": 3.1, "sodium": 1 },
+    "commonServings": [
+      { "label": "1个", "grams": 200 }
+    ]
+  },
+  {
+    "id": "peach",
+    "name": "桃子",
+    "nameEn": "Peach",
+    "pinyinIndex": "tz",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 39, "protein": 0.9, "fat": 0.3, "carbs": 9.5, "fiber": 1.5, "sodium": 0 },
+    "commonServings": [
+      { "label": "1个", "grams": 150 }
+    ]
+  },
+  {
+    "id": "zucchini",
+    "name": "西葫芦",
+    "nameEn": "Zucchini",
+    "pinyinIndex": "xhl",
+    "category": "vegetable",
+    "source": "USDA",
+    "per100g": { "calories": 17, "protein": 1.2, "fat": 0.3, "carbs": 3.1, "fiber": 1.0, "sodium": 8 },
+    "commonServings": [
+      { "label": "1根", "grams": 200 }
+    ]
+  },
+  {
+    "id": "eggplant",
+    "name": "茄子",
+    "nameEn": "Eggplant",
+    "pinyinIndex": "qz",
+    "category": "vegetable",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 25, "protein": 1.0, "fat": 0.2, "carbs": 5.9, "fiber": 3.0, "sodium": 2 },
+    "commonServings": [
+      { "label": "1个", "grams": 200 }
+    ]
+  },
+  {
+    "id": "green_bean",
+    "name": "豆角",
+    "nameEn": "Green Bean",
+    "pinyinIndex": "dj",
+    "category": "vegetable",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 31, "protein": 1.8, "fat": 0.2, "carbs": 7.0, "fiber": 2.7, "sodium": 6 },
+    "commonServings": [
+      { "label": "1份", "grams": 100 }
+    ]
+  },
+  {
+    "id": "flaxseed",
+    "name": "亚麻籽",
+    "nameEn": "Flaxseed",
+    "pinyinIndex": "ymz",
+    "category": "nut",
+    "source": "USDA",
+    "per100g": { "calories": 534, "protein": 18.3, "fat": 42.2, "carbs": 28.9, "fiber": 27.3, "sodium": 30 },
+    "commonServings": [
+      { "label": "1勺", "grams": 10 }
+    ]
+  },
+  {
+    "id": "honey",
+    "name": "蜂蜜",
+    "nameEn": "Honey",
+    "pinyinIndex": "fm",
+    "category": "snack",
+    "source": "USDA",
+    "per100g": { "calories": 304, "protein": 0.3, "fat": 0, "carbs": 82.4, "fiber": 0.2, "sodium": 4 },
+    "commonServings": [
+      { "label": "1勺", "grams": 15 }
+    ]
+  },
+  {
+    "id": "oat_milk",
+    "name": "燕麦奶",
+    "nameEn": "Oat Milk",
+    "pinyinIndex": "ymn",
+    "category": "dairy",
+    "source": "USDA",
+    "per100g": { "calories": 48, "protein": 1.0, "fat": 1.5, "carbs": 7.6, "fiber": 0.8, "sodium": 39 },
+    "commonServings": [
+      { "label": "1杯", "grams": 240 }
+    ]
+  },
+  {
+    "id": "scallop",
+    "name": "扇贝",
+    "nameEn": "Scallop",
+    "pinyinIndex": "sb",
+    "category": "seafood",
+    "source": "USDA",
+    "per100g": { "calories": 69, "protein": 12.1, "fat": 0.5, "carbs": 3.2, "fiber": 0, "sodium": 392 },
+    "commonServings": [
+      { "label": "3个", "grams": 80 }
+    ]
+  },
+  {
+    "id": "mango",
+    "name": "芒果",
+    "nameEn": "Mango",
+    "pinyinIndex": "mg",
+    "category": "fruit",
+    "source": "USDA",
+    "per100g": { "calories": 60, "protein": 0.8, "fat": 0.4, "carbs": 15.0, "fiber": 1.6, "sodium": 1 },
+    "commonServings": [
+      { "label": "1个", "grams": 200 }
+    ]
+  },
+  {
+    "id": "soy_sauce",
+    "name": "酱油",
+    "nameEn": "Soy Sauce",
+    "pinyinIndex": "jy",
+    "category": "oil",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 56, "protein": 5.6, "fat": 0.1, "carbs": 8.3, "fiber": 0, "sodium": 5717 },
+    "commonServings": [
+      { "label": "1茶匙", "grams": 5 },
+      { "label": "1汤匙", "grams": 15 }
+    ]
+  },
+  {
+    "id": "seaweed_dried",
+    "name": "紫菜(干)",
+    "nameEn": "Dried Seaweed",
+    "pinyinIndex": "zc",
+    "category": "vegetable",
+    "source": "CDC_CHINA",
+    "per100g": { "calories": 250, "protein": 26.7, "fat": 1.1, "carbs": 44.1, "fiber": 21.6, "sodium": 710 },
+    "commonServings": [
+      { "label": "1小包", "grams": 5 }
+    ]
+  }
+]
