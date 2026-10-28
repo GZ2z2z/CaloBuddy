@@ -12,7 +12,7 @@ export function TabBar() {
   const { currentTab, setCurrentTab } = useAppStore();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl bg-[var(--color-bg-card)]/80 border-t border-[var(--color-divider)] safe-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-30 backdrop-blur-xl bg-[var(--color-bg-card)]/80 border-t border-[var(--color-divider)] safe-bottom">
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
         {tabs.map((tab) => {
           const isActive = currentTab === tab.id;

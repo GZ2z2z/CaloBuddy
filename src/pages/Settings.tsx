@@ -7,9 +7,16 @@ import { uploadToGist, downloadFromGist } from '@/utils/githubSync';
 import toast from 'react-hot-toast';
 
 export function SettingsPage() {
-  const { profile, setProfile, theme, setTheme } = useAppStore();
+  const { profile, setProfile, theme, setTheme, todayLog, loadDailyLog } = useAppStore();
   const [editingWeight, setEditingWeight] = useState(false);
   const [newWeight, setNewWeight] = useState('');
+
+  // Custom Targets editing state
+  const [editingTargets, setEditingTargets] = useState(false);
+  const [customCal, setCustomCal] = useState('');
+  const [customProtein, setCustomProtein] = useState('');
+  const [customCarbs, setCustomCarbs] = useState('');
+  const [customFat, setCustomFat] = useState('');
 
   // GitHub Sync state
   const [syncToken, setSyncToken] = useState(profile?.githubSyncToken ?? '');
@@ -37,6 +44,54 @@ export function SettingsPage() {
       targetCarbs: macros.carbs,
     });
     toast.success('体重已更新，目标已重算');
+  };
+
+  const handleSaveTargets = async () => {
+    if (!profile) return;
+    const cal = parseInt(customCal);
+    const p = parseFloat(customProtein);
+    const c = parseFloat(customCarbs);
+    const f = parseFloat(customFat);
+
+    if (!cal || cal < 500 || cal > 10000) {
+      toast.error('请输入合理的热量预算 (500~10000 kcal)');
+      return;
+    }
+
+    const updatedProfile = {
+      ...profile,
+      targetCalories: cal,
+      targetProtein: p >= 0 ? p : profile.targetProtein,
+      targetCarbs: c >= 0 ? c : profile.targetCarbs,
+      targetFat: f >= 0 ? f : profile.targetFat,
+      updatedAt: Date.now(),
+    };
+
+    await setProfile(updatedProfile);
+
+    // If today's log exists, update its targetCalories too
+    if (todayLog) {
+      await db.dailyLogs.update(todayLog.date, { targetCalories: cal });
+      await loadDailyLog(todayLog.date);
+    }
+
+    setEditingTargets(false);
+    toast.success('🎯 每日热量与营养素目标已自定义更新！');
+  };
+
+  const handleResetTargets = async () => {
+    if (!profile) return;
+    const age = getAge(profile.birthYear);
+    const bmr = calculateBMR(profile.gender, profile.currentWeightKg, profile.heightCm, age);
+    const tdee = calculateTDEE(bmr, profile.activityLevel);
+    const targetCalories = calculateTargetCalories(tdee, profile.deficitMode);
+    const macros = calculateMacros(targetCalories, profile.currentWeightKg);
+
+    setCustomCal(String(targetCalories));
+    setCustomProtein(String(macros.protein));
+    setCustomCarbs(String(macros.carbs));
+    setCustomFat(String(macros.fat));
+    toast.success('已恢复为科学推荐值');
   };
 
   const handleExport = async () => {
@@ -196,33 +251,130 @@ export function SettingsPage() {
 
       {/* Targets */}
       <section className="bg-[var(--color-bg-card)] rounded-2xl p-5 border border-[var(--color-divider)] mb-4">
-        <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">每日目标</h2>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span>热量预算</span>
-            <span className="font-bold text-[var(--color-calories)]">{profile.targetCalories} kcal</span>
-          </div>
-          <div className="flex justify-between">
-            <span>蛋白质</span>
-            <span className="font-bold text-[var(--color-protein)]">{profile.targetProtein}g</span>
-          </div>
-          <div className="flex justify-between">
-            <span>碳水化合物</span>
-            <span className="font-bold text-[var(--color-carbs)]">{profile.targetCarbs}g</span>
-          </div>
-          <div className="flex justify-between">
-            <span>脂肪</span>
-            <span className="font-bold text-[var(--color-fat)]">{profile.targetFat}g</span>
-          </div>
-          <div className="flex justify-between">
-            <span>TDEE</span>
-            <span className="font-medium">{profile.tdee} kcal</span>
-          </div>
-          <div className="flex justify-between">
-            <span>BMR</span>
-            <span className="font-medium">{profile.bmr} kcal</span>
-          </div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-[var(--color-text-secondary)]">每日目标 (支持自定义)</h2>
+          {!editingTargets ? (
+            <button
+              onClick={() => {
+                setCustomCal(String(profile.targetCalories));
+                setCustomProtein(String(profile.targetProtein));
+                setCustomCarbs(String(profile.targetCarbs));
+                setCustomFat(String(profile.targetFat));
+                setEditingTargets(true);
+              }}
+              className="text-xs text-[var(--color-calories)] font-medium px-2 py-0.5 rounded bg-[var(--color-bg-secondary)]"
+            >
+              ✎ 自定义目标
+            </button>
+          ) : (
+            <button
+              onClick={handleResetTargets}
+              className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-calories)] px-2 py-0.5 rounded bg-[var(--color-bg-secondary)]"
+            >
+              ↺ 恢复推荐值
+            </button>
+          )}
         </div>
+
+        {editingTargets ? (
+          <div className="space-y-3 pt-1">
+            <div>
+              <label className="text-xs text-[var(--color-text-secondary)] block mb-1">
+                每日热量预算 (kcal)
+              </label>
+              <input
+                type="number"
+                value={customCal}
+                onChange={(e) => setCustomCal(e.target.value)}
+                placeholder="如 1800"
+                className="w-full px-3 py-2 text-sm font-bold text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  蛋白质 (g)
+                </label>
+                <input
+                  type="number"
+                  value={customProtein}
+                  onChange={(e) => setCustomProtein(e.target.value)}
+                  placeholder="如 135"
+                  className="w-full px-2.5 py-1.5 text-xs font-bold text-[#FB7185] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  碳水化合物 (g)
+                </label>
+                <input
+                  type="number"
+                  value={customCarbs}
+                  onChange={(e) => setCustomCarbs(e.target.value)}
+                  placeholder="如 200"
+                  className="w-full px-2.5 py-1.5 text-xs font-bold text-[#10B981] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  脂肪 (g)
+                </label>
+                <input
+                  type="number"
+                  value={customFat}
+                  onChange={(e) => setCustomFat(e.target.value)}
+                  placeholder="如 45"
+                  className="w-full px-2.5 py-1.5 text-xs font-bold text-[#FBBF24] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={handleSaveTargets}
+                className="flex-1 py-2 rounded-xl bg-[var(--color-calories)] text-white text-xs font-semibold shadow-xs"
+              >
+                保存自定义目标
+              </button>
+              <button
+                onClick={() => setEditingTargets(false)}
+                className="px-3 py-2 rounded-xl bg-[var(--color-bg-secondary)] text-xs text-[var(--color-text-secondary)]"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span>热量预算</span>
+              <span className="font-bold text-[var(--color-calories)]">{profile.targetCalories} kcal</span>
+            </div>
+            <div className="flex justify-between">
+              <span>蛋白质</span>
+              <span className="font-bold text-[var(--color-protein)]">{profile.targetProtein}g</span>
+            </div>
+            <div className="flex justify-between">
+              <span>碳水化合物</span>
+              <span className="font-bold text-[var(--color-carbs)]">{profile.targetCarbs}g</span>
+            </div>
+            <div className="flex justify-between">
+              <span>脂肪</span>
+              <span className="font-bold text-[var(--color-fat)]">{profile.targetFat}g</span>
+            </div>
+            <div className="flex justify-between">
+              <span>TDEE (总能量消耗)</span>
+              <span className="font-medium">{profile.tdee} kcal</span>
+            </div>
+            <div className="flex justify-between">
+              <span>BMR (基础代谢)</span>
+              <span className="font-medium">{profile.bmr} kcal</span>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Theme */}

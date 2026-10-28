@@ -14,7 +14,7 @@ export function FloatingActionBar({
   onQuickAi,
 }: FloatingActionBarProps) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
+    <div className="fixed bottom-20 left-0 right-0 z-20 flex justify-center pointer-events-none px-4">
       <div className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#D1FAE5]/95 dark:bg-[#064E3B]/95 text-[#065F46] dark:text-[#A7F3D0] backdrop-blur-xl border border-emerald-300/40 dark:border-emerald-700/50 shadow-xl shadow-emerald-600/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
         {/* AI 算热量 */}
         <button

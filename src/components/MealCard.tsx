@@ -49,7 +49,14 @@ const EMOJI_TINTS = [
 export function MealCard({ mealType, entries, targetCalories, onAddClick }: MealCardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [editingEntry, setEditingEntry] = useState<MealEntry | null>(null);
+
+  // Editable fields for custom nutrition
   const [editGrams, setEditGrams] = useState('');
+  const [editCalories, setEditCalories] = useState('');
+  const [editProtein, setEditProtein] = useState('');
+  const [editCarbs, setEditCarbs] = useState('');
+  const [editFat, setEditFat] = useState('');
+
   const removeMealEntry = useAppStore((s) => s.removeMealEntry);
   const addMealEntry = useAppStore((s) => s.addMealEntry);
 
@@ -57,28 +64,48 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
   const totalCalories = entries.reduce((sum, e) => sum + e.calories, 0);
   const rangeText = getMealRange(mealType, targetCalories);
 
+  const openEditModal = (entry: MealEntry) => {
+    setEditingEntry(entry);
+    setEditGrams(String(entry.grams));
+    setEditCalories(String(entry.calories));
+    setEditProtein(String(entry.protein));
+    setEditCarbs(String(entry.carbs));
+    setEditFat(String(entry.fat));
+  };
+
+  const handleGramsChange = (newGramsStr: string) => {
+    setEditGrams(newGramsStr);
+    const newG = parseFloat(newGramsStr);
+    if (editingEntry && newG > 0 && editingEntry.grams > 0) {
+      const ratio = newG / editingEntry.grams;
+      setEditCalories(String(Math.round(editingEntry.calories * ratio)));
+      setEditProtein(String(Math.round(editingEntry.protein * ratio * 10) / 10));
+      setEditCarbs(String(Math.round(editingEntry.carbs * ratio * 10) / 10));
+      setEditFat(String(Math.round(editingEntry.fat * ratio * 10) / 10));
+    }
+  };
+
   const handleSaveEdit = async () => {
     if (!editingEntry) return;
-    const newGrams = parseFloat(editGrams);
-    if (!newGrams || newGrams <= 0) {
-      toast.error('请输入有效克数');
-      return;
-    }
-    // calculate new ratios
-    const ratio = newGrams / editingEntry.grams;
+    const g = parseFloat(editGrams) || editingEntry.grams;
+    const cal = parseInt(editCalories) || 0;
+    const p = parseFloat(editProtein) || 0;
+    const c = parseFloat(editCarbs) || 0;
+    const f = parseFloat(editFat) || 0;
+
     await removeMealEntry(mealType, editingEntry.entryId);
     await addMealEntry(mealType, {
       foodId: editingEntry.foodId,
       name: editingEntry.name,
       emoji: editingEntry.emoji,
-      grams: newGrams,
-      calories: Math.round(editingEntry.calories * ratio),
-      protein: Math.round(editingEntry.protein * ratio * 10) / 10,
-      fat: Math.round(editingEntry.fat * ratio * 10) / 10,
-      carbs: Math.round(editingEntry.carbs * ratio * 10) / 10,
+      grams: g,
+      calories: cal,
+      protein: p,
+      fat: f,
+      carbs: c,
     });
     setEditingEntry(null);
-    toast.success('已更新份量');
+    toast.success('已自定义保存');
   };
 
   return (
@@ -127,10 +154,7 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
                 return (
                   <div
                     key={entry.entryId}
-                    onClick={() => {
-                      setEditingEntry(entry);
-                      setEditGrams(String(entry.grams));
-                    }}
+                    onClick={() => openEditModal(entry)}
                     className="flex items-center justify-between py-3 cursor-pointer group active:bg-[var(--color-bg-secondary)]/50 rounded-2xl px-1 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -147,7 +171,7 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
                           {entry.name}
                         </div>
                         <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-                          {entry.grams} 克
+                          {entry.grams} 克 · 蛋白{entry.protein}g · 碳水{entry.carbs}g · 脂肪{entry.fat}g
                         </div>
                       </div>
                     </div>
@@ -178,18 +202,18 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
         </button>
       </div>
 
-      {/* Food Edit Modal */}
+      {/* Food Edit & Nutrition Customization Modal */}
       {editingEntry && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-[var(--color-bg-card)] rounded-3xl p-5 max-w-xs w-full border border-[var(--color-divider)] shadow-2xl">
-            <div className="flex items-center justify-between mb-3">
+        <div className="fixed inset-0 z-[120] bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[var(--color-bg-card)] rounded-3xl p-5 max-w-sm w-full border border-[var(--color-divider)] shadow-2xl">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[var(--color-divider)]">
               <div className="flex items-center gap-2">
                 <span className="text-2xl">{editingEntry.emoji ?? '🥗'}</span>
                 <div>
                   <h3 className="text-base font-bold text-[var(--color-text-primary)]">
                     {editingEntry.name}
                   </h3>
-                  <p className="text-xs text-[var(--color-text-secondary)]">修改食用克数</p>
+                  <p className="text-[11px] text-[var(--color-text-secondary)]">自定义修改份量与各项营养数据</p>
                 </div>
               </div>
               <button
@@ -200,23 +224,80 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
               </button>
             </div>
 
-            <div className="flex items-center gap-2 mb-4">
+            {/* Grams Input */}
+            <div className="mb-3">
+              <label className="text-xs text-[var(--color-text-secondary)] font-medium block mb-1">
+                食用重量 (g)
+              </label>
               <input
                 type="number"
                 value={editGrams}
-                onChange={(e) => setEditGrams(e.target.value)}
-                className="flex-1 py-2 px-3 text-lg font-bold rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] text-center"
+                onChange={(e) => handleGramsChange(e.target.value)}
+                className="w-full py-2 px-3 text-base font-bold rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] text-center"
                 min={1}
               />
-              <span className="text-sm text-[var(--color-text-secondary)]">克</span>
+            </div>
+
+            {/* 4 Custom Macronutrients */}
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  热量 (kcal)
+                </label>
+                <input
+                  type="number"
+                  value={editCalories}
+                  onChange={(e) => setEditCalories(e.target.value)}
+                  className="w-full py-1.5 px-2.5 text-sm font-bold text-[var(--color-calories)] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  蛋白质 (g)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={editProtein}
+                  onChange={(e) => setEditProtein(e.target.value)}
+                  className="w-full py-1.5 px-2.5 text-sm font-bold text-[#FB7185] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  碳水化合物 (g)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={editCarbs}
+                  onChange={(e) => setEditCarbs(e.target.value)}
+                  className="w-full py-1.5 px-2.5 text-sm font-bold text-[#10B981] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+                  脂肪 (g)
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={editFat}
+                  onChange={(e) => setEditFat(e.target.value)}
+                  className="w-full py-1.5 px-2.5 text-sm font-bold text-[#FBBF24] rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+                />
+              </div>
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={handleSaveEdit}
-                className="flex-1 py-2 rounded-xl bg-[var(--color-calories)] text-white text-sm font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-[var(--color-calories)] text-white text-xs font-semibold shadow-xs"
               >
-                保存修改
+                保存自定义数据
               </button>
               <button
                 onClick={() => {
@@ -224,7 +305,7 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
                   setEditingEntry(null);
                   toast.success('已删除');
                 }}
-                className="py-2 px-3 rounded-xl bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300 text-xs font-semibold"
+                className="py-2.5 px-3 rounded-xl bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-300 text-xs font-semibold"
               >
                 删除
               </button>
