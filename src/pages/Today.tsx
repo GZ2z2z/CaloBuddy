@@ -7,6 +7,7 @@ import { MealCard } from '@/components/MealCard';
 import { WaterTracker } from '@/components/WaterTracker';
 import { FoodSearchPanel } from '@/components/FoodSearchPanel';
 import { FloatingActionBar, AiQuickDialog } from '@/components/FloatingActionBar';
+import { QuickMealModal } from '@/components/QuickMealModal';
 import { parseFoodText } from '@/utils/aiParser';
 import type { MealType } from '@/types';
 import toast from 'react-hot-toast';
@@ -22,6 +23,7 @@ export function TodayPage() {
 
   const [searchMealType, setSearchMealType] = useState<MealType | null>(null);
   const [showAiDialog, setShowAiDialog] = useState(false);
+  const [showQuickMealModal, setShowQuickMealModal] = useState(false);
 
   if (!profile || !todayLog) return null;
 
@@ -97,9 +99,17 @@ export function TodayPage() {
 
       {/* Floating Action Pill matching 薄荷健康 screenshot */}
       <FloatingActionBar
+        onQuickFastLog={() => setShowQuickMealModal(true)}
         onQuickSearch={() => setSearchMealType('lunch')}
         onQuickScan={() => setCurrentTab('scan')}
         onQuickAi={() => setShowAiDialog(true)}
+      />
+
+      {/* Quick Meal Direct Input Modal */}
+      <QuickMealModal
+        isOpen={showQuickMealModal}
+        initialMealType="lunch"
+        onClose={() => setShowQuickMealModal(false)}
       />
 
       {/* Food search modal panel */}

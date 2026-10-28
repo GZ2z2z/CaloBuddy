@@ -24,8 +24,10 @@ export interface NutritionPer100g {
 }
 
 export interface ServingOption {
-  label: string;     // e.g. "1碗" "1个" "1块"
+  label: string; // e.g. "1个" "1碗" "1杯"
+  unitName?: string; // "个", "碗", "杯", "盒", "片", "勺", "块"
   grams: number;
+  unit?: 'g' | 'ml';
 }
 
 // ─── Food Item ───
@@ -36,6 +38,8 @@ export interface FoodItem {
   pinyinIndex: string;
   category: FoodCategory;
   source: 'USDA' | 'CDC_CHINA' | 'USER_CUSTOM' | 'OCR_SCANNED';
+  isLiquid?: boolean;
+  defaultUnit?: 'g' | 'ml';
   per100g: NutritionPer100g;
   commonServings?: ServingOption[];
   isFavorite?: boolean;
@@ -49,7 +53,11 @@ export interface MealEntry {
   foodId: string;
   name: string;
   emoji?: string;
-  grams: number;
+  unit?: 'g' | 'ml';
+  servingLabel?: string;      // e.g. "个", "碗", "片", "杯", "盒"
+  servingUnitWeight?: number; // e.g. 60 (g per serving)
+  servingCount?: number;      // e.g. 2
+  grams: number;              // Total weight or volume (e.g. 120)
   calories: number;
   protein: number;
   fat: number;

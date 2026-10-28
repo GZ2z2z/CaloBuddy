@@ -1,0 +1,1018 @@
+import fs from 'fs';
+
+// Helper to calculate Pinyin initials
+function getPinyin(name) {
+  // basic initial mappings for common food chars
+  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+// 300+ comprehensive food items
+const foods = [
+  // ─── 1. 主食谷薯 (Staple) ───
+  {
+    id: "rice_white_cooked",
+    name: "白米饭 (熟)",
+    nameEn: "Cooked White Rice",
+    pinyinIndex: "bmf",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 116, protein: 2.6, fat: 0.3, carbs: 25.9, fiber: 0.4, sodium: 1.5, sugar: 0.1 },
+    commonServings: [{ label: "1小碗", grams: 150 }, { label: "1标准碗", grams: 200 }, { label: "1大碗", grams: 300 }]
+  },
+  {
+    id: "rice_brown_cooked",
+    name: "糙米饭 (熟)",
+    nameEn: "Cooked Brown Rice",
+    pinyinIndex: "cmf",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 111, protein: 2.7, fat: 0.9, carbs: 23.0, fiber: 1.8, sodium: 1.0, sugar: 0.2 },
+    commonServings: [{ label: "1小碗", grams: 150 }, { label: "1标准碗", grams: 200 }]
+  },
+  {
+    id: "rice_black_cooked",
+    name: "黑米饭 (熟)",
+    nameEn: "Cooked Black Rice",
+    pinyinIndex: "hmf",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 114, protein: 2.8, fat: 0.8, carbs: 23.8, fiber: 2.2, sodium: 2.0, sugar: 0.3 },
+    commonServings: [{ label: "1标准碗", grams: 200 }]
+  },
+  {
+    id: "quinoa_cooked",
+    name: "藜麦饭 (熟)",
+    nameEn: "Cooked Quinoa",
+    pinyinIndex: "lmf",
+    category: "staple",
+    source: "USDA",
+    per100g: { calories: 120, protein: 4.4, fat: 1.9, carbs: 21.3, fiber: 2.8, sodium: 7.0, sugar: 0.9 },
+    commonServings: [{ label: "1小碗", grams: 150 }, { label: "1标准碗", grams: 200 }]
+  },
+  {
+    id: "oats_rolled",
+    name: "生燕麦片",
+    nameEn: "Rolled Oats",
+    pinyinIndex: "symp",
+    category: "staple",
+    source: "USDA",
+    per100g: { calories: 379, protein: 13.5, fat: 6.5, carbs: 67.7, fiber: 10.6, sodium: 2.0, sugar: 1.0 },
+    commonServings: [{ label: "1份", grams: 35 }, { label: "1大份", grams: 50 }]
+  },
+  {
+    id: "oatmeal_cooked",
+    name: "即食燕麦粥 (水煮)",
+    nameEn: "Cooked Oatmeal",
+    pinyinIndex: "jsymz",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 68, protein: 2.4, fat: 1.4, carbs: 12.0, fiber: 1.7, sodium: 3.0, sugar: 0.2 },
+    commonServings: [{ label: "1标准碗", grams: 250 }]
+  },
+  {
+    id: "bread_whole_wheat",
+    name: "全麦面包",
+    nameEn: "Whole Wheat Bread",
+    pinyinIndex: "qmmb",
+    category: "staple",
+    source: "USDA",
+    per100g: { calories: 247, protein: 13.0, fat: 3.4, carbs: 41.3, fiber: 6.8, sodium: 450, sugar: 5.6 },
+    commonServings: [{ label: "1片", grams: 35 }, { label: "2片", grams: 70 }]
+  },
+  {
+    id: "bagel_whole_wheat",
+    name: "全麦原味贝果 (自制/市售)",
+    nameEn: "Whole Wheat Bagel",
+    pinyinIndex: "qmwbgb",
+    category: "staple",
+    source: "USDA",
+    per100g: { calories: 221, protein: 9.8, fat: 1.5, carbs: 44.0, fiber: 4.5, sodium: 380, sugar: 3.0 },
+    commonServings: [{ label: "1个标准贝果", grams: 110 }]
+  },
+  {
+    id: "sweet_potato_steamed",
+    name: "蒸红薯 / 烤红薯",
+    nameEn: "Sweet Potato",
+    pinyinIndex: "zhs",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 86, protein: 1.6, fat: 0.2, carbs: 20.1, fiber: 3.0, sodium: 13.0, sugar: 4.2 },
+    commonServings: [{ label: "1个中等", grams: 200 }, { label: "1个小果", grams: 120 }]
+  },
+  {
+    id: "purple_potato_steamed",
+    name: "蒸紫薯",
+    nameEn: "Purple Sweet Potato",
+    pinyinIndex: "zzs",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 82, protein: 1.6, fat: 0.2, carbs: 18.8, fiber: 3.2, sodium: 15.0, sugar: 3.8 },
+    commonServings: [{ label: "1个中等", grams: 150 }]
+  },
+  {
+    id: "corn_cob",
+    name: "甜玉米 (带芯煮)",
+    nameEn: "Sweet Corn",
+    pinyinIndex: "tyb",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 112, protein: 4.0, fat: 1.2, carbs: 22.8, fiber: 2.9, sodium: 1.1, sugar: 3.2 },
+    commonServings: [{ label: "1根中等玉米", grams: 200 }]
+  },
+  {
+    id: "potato_steamed",
+    name: "蒸土豆 / 马铃薯",
+    nameEn: "Steamed Potato",
+    pinyinIndex: "ztd",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 76, protein: 2.0, fat: 0.2, carbs: 17.2, fiber: 2.2, sodium: 2.7, sugar: 0.8 },
+    commonServings: [{ label: "1个中等土豆", grams: 150 }]
+  },
+  {
+    id: "buckwheat_noodles_cooked",
+    name: "荞麦面 (熟)",
+    nameEn: "Cooked Buckwheat Noodles",
+    pinyinIndex: "qmm",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 115, protein: 3.8, fat: 0.5, carbs: 24.1, fiber: 2.0, sodium: 120, sugar: 0.5 },
+    commonServings: [{ label: "1标准碗", grams: 200 }, { label: "1大碗", grams: 300 }]
+  },
+  {
+    id: "pasta_cooked",
+    name: "意大利面 (全麦/纯面 熟)",
+    nameEn: "Cooked Pasta",
+    pinyinIndex: "ydlm",
+    category: "staple",
+    source: "USDA",
+    per100g: { calories: 131, protein: 5.3, fat: 1.1, carbs: 25.0, fiber: 2.5, sodium: 1.0, sugar: 0.6 },
+    commonServings: [{ label: "1人份熟重", grams: 180 }]
+  },
+  {
+    id: "shirataki_konjac_noodles",
+    name: "魔芋丝 / 魔芋结 / 魔芋面",
+    nameEn: "Konjac Shirataki Noodles",
+    pinyinIndex: "mys",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 12, protein: 0.1, fat: 0.1, carbs: 2.5, fiber: 2.8, sodium: 5.0, sugar: 0 },
+    commonServings: [{ label: "1盒/袋", grams: 200 }]
+  },
+  {
+    id: "chinese_mantou",
+    name: "白面馒头",
+    nameEn: "Steamed Bun (Mantou)",
+    pinyinIndex: "bmmt",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 223, protein: 7.0, fat: 1.1, carbs: 47.0, fiber: 1.3, sodium: 165, sugar: 1.5 },
+    commonServings: [{ label: "1个中等", grams: 100 }, { label: "1个小馒头", grams: 50 }]
+  },
+  {
+    id: "whole_grain_mantou",
+    name: "杂粮窝窝头 / 荞麦馒头",
+    nameEn: "Multi-grain Steamed Bun",
+    pinyinIndex: "zlwwt",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 185, protein: 7.2, fat: 1.5, carbs: 36.5, fiber: 4.2, sodium: 120, sugar: 1.0 },
+    commonServings: [{ label: "1个", grams: 80 }]
+  },
+  {
+    id: "pumpkin_steamed",
+    name: "蒸贝贝南瓜",
+    nameEn: "Steamed Kabocha Pumpkin",
+    pinyinIndex: "zbbng",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 35, protein: 1.2, fat: 0.1, carbs: 7.8, fiber: 1.5, sodium: 1.2, sugar: 3.5 },
+    commonServings: [{ label: "半个贝贝南瓜", grams: 150 }, { label: "1整个", grams: 300 }]
+  },
+
+  // ─── 2. 畜禽肉类 (Meat) ───
+  {
+    id: "chicken_breast_raw",
+    name: "鸡胸肉 (生/去皮)",
+    nameEn: "Raw Chicken Breast",
+    pinyinIndex: "jxr",
+    category: "meat",
+    source: "USDA",
+    per100g: { calories: 120, protein: 26.2, fat: 1.8, carbs: 0, fiber: 0, sodium: 65, sugar: 0 },
+    commonServings: [{ label: "1小块", grams: 100 }, { label: "1整块", grams: 150 }, { label: "1大块", grams: 200 }]
+  },
+  {
+    id: "chicken_breast_cooked",
+    name: "水煮/香煎鸡胸肉 (熟)",
+    nameEn: "Cooked Chicken Breast",
+    pinyinIndex: "szjxr",
+    category: "meat",
+    source: "USDA",
+    per100g: { calories: 165, protein: 31.0, fat: 3.6, carbs: 0, fiber: 0, sodium: 74, sugar: 0 },
+    commonServings: [{ label: "1小份熟重", grams: 100 }, { label: "1整块熟重", grams: 150 }, { label: "1大份熟重", grams: 200 }]
+  },
+  {
+    id: "chicken_tenderloin",
+    name: "鸡小胸 / 鸡里脊",
+    nameEn: "Chicken Tenderloin",
+    pinyinIndex: "jxx",
+    category: "meat",
+    source: "USDA",
+    per100g: { calories: 110, protein: 24.5, fat: 1.2, carbs: 0, fiber: 0, sodium: 60, sugar: 0 },
+    commonServings: [{ label: "3条", grams: 100 }, { label: "1人份", grams: 150 }]
+  },
+  {
+    id: "chicken_thigh_skinless_cooked",
+    name: "去皮鸡腿肉 (熟)",
+    nameEn: "Cooked Skinless Chicken Thigh",
+    pinyinIndex: "qpjtr",
+    category: "meat",
+    source: "USDA",
+    per100g: { calories: 150, protein: 24.0, fat: 6.0, carbs: 0, fiber: 0, sodium: 85, sugar: 0 },
+    commonServings: [{ label: "1个大琵琶腿肉", grams: 120 }]
+  },
+  {
+    id: "beef_shank_braised",
+    name: "酱牛肉 / 卤牛腱子",
+    nameEn: "Braised Beef Shank",
+    pinyinIndex: "jnr",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 145, protein: 28.5, fat: 3.2, carbs: 0.5, fiber: 0, sodium: 450, sugar: 0 },
+    commonServings: [{ label: "1人份切片", grams: 100 }, { label: "1大份", grams: 150 }, { label: "200克整块", grams: 200 }]
+  },
+  {
+    id: "beef_tenderloin_cooked",
+    name: "牛柳 / 牛里脊 (香煎熟)",
+    nameEn: "Cooked Beef Tenderloin (Filet)",
+    pinyinIndex: "nlj",
+    category: "meat",
+    source: "USDA",
+    per100g: { calories: 175, protein: 27.0, fat: 7.2, carbs: 0, fiber: 0, sodium: 55, sugar: 0 },
+    commonServings: [{ label: "1块牛排", grams: 150 }, { label: "200克厚切", grams: 200 }]
+  },
+  {
+    id: "pork_tenderloin_cooked",
+    name: "猪里脊肉 (纯瘦 熟)",
+    nameEn: "Cooked Pork Tenderloin",
+    pinyinIndex: "zlj",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 143, protein: 26.2, fat: 4.1, carbs: 0, fiber: 0, sodium: 50, sugar: 0 },
+    commonServings: [{ label: "1份炒肉丝份量", grams: 100 }, { label: "1大份", grams: 150 }]
+  },
+  {
+    id: "duck_breast_skinless",
+    name: "去皮鸭胸肉",
+    nameEn: "Skinless Duck Breast",
+    pinyinIndex: "qpyxr",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 123, protein: 22.0, fat: 3.8, carbs: 0.3, fiber: 0, sodium: 62, sugar: 0 },
+    commonServings: [{ label: "1块", grams: 150 }]
+  },
+  {
+    id: "lamb_leg_lean",
+    name: "瘦羊腿肉",
+    nameEn: "Lean Lamb Leg",
+    pinyinIndex: "sytr",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 135, protein: 21.5, fat: 5.5, carbs: 0, fiber: 0, sodium: 70, sugar: 0 },
+    commonServings: [{ label: "1人份", grams: 100 }]
+  },
+
+  // ─── 3. 鱼虾海鲜 (Seafood) ───
+  {
+    id: "salmon_cooked",
+    name: "三文鱼 (香煎熟)",
+    nameEn: "Cooked Salmon",
+    pinyinIndex: "swy",
+    category: "seafood",
+    source: "USDA",
+    per100g: { calories: 206, protein: 22.1, fat: 12.3, carbs: 0, fiber: 0, sodium: 60, sugar: 0 },
+    commonServings: [{ label: "1块中等鱼排", grams: 120 }, { label: "1块大鱼排", grams: 180 }]
+  },
+  {
+    id: "shrimp_meat_cooked",
+    name: "纯虾仁 / 白灼大虾 (去壳熟)",
+    nameEn: "Cooked Peeled Shrimp",
+    pinyinIndex: "xr",
+    category: "seafood",
+    source: "CDC_CHINA",
+    per100g: { calories: 94, protein: 20.3, fat: 0.7, carbs: 0.8, fiber: 0, sodium: 160, sugar: 0 },
+    commonServings: [{ label: "10颗大虾仁", grams: 100 }, { label: "1大碗大虾", grams: 200 }]
+  },
+  {
+    id: "cod_fish_steamed",
+    name: "鳕鱼 / 银鳕鱼 (清蒸)",
+    nameEn: "Steamed Cod Fish",
+    pinyinIndex: "xy",
+    category: "seafood",
+    source: "USDA",
+    per100g: { calories: 82, protein: 17.8, fat: 0.7, carbs: 0, fiber: 0, sodium: 65, sugar: 0 },
+    commonServings: [{ label: "1块中等鱼柳", grams: 120 }]
+  },
+  {
+    id: "tuna_water_canned",
+    name: "水浸金枪鱼罐头 (沥干)",
+    nameEn: "Canned Tuna in Water",
+    pinyinIndex: "sjqqygt",
+    category: "seafood",
+    source: "USDA",
+    per100g: { calories: 116, protein: 25.5, fat: 0.8, carbs: 0, fiber: 0, sodium: 330, sugar: 0 },
+    commonServings: [{ label: "半罐", grams: 60 }, { label: "1整罐", grams: 120 }]
+  },
+  {
+    id: "sea_bass_steamed",
+    name: "清蒸鲈鱼",
+    nameEn: "Steamed Sea Bass",
+    pinyinIndex: "qzly",
+    category: "seafood",
+    source: "CDC_CHINA",
+    per100g: { calories: 105, protein: 18.6, fat: 3.4, carbs: 0, fiber: 0, sodium: 68, sugar: 0 },
+    commonServings: [{ label: "1条净肉重", grams: 250 }, { label: "半条", grams: 130 }]
+  },
+  {
+    id: "tilapia_cooked",
+    name: "罗非鱼 / 鲷鱼柳",
+    nameEn: "Cooked Tilapia",
+    pinyinIndex: "rfy",
+    category: "seafood",
+    source: "USDA",
+    per100g: { calories: 96, protein: 20.1, fat: 1.7, carbs: 0, fiber: 0, sodium: 52, sugar: 0 },
+    commonServings: [{ label: "1条鱼柳", grams: 110 }]
+  },
+  {
+    id: "crab_stick",
+    name: "蟹柳棒 / 帝王蟹肉棒",
+    nameEn: "Surimi Crab Stick",
+    pinyinIndex: "xlb",
+    category: "seafood",
+    source: "CDC_CHINA",
+    per100g: { calories: 95, protein: 12.0, fat: 0.8, carbs: 10.2, fiber: 0.5, sodium: 480, sugar: 3.0 },
+    commonServings: [{ label: "2根", grams: 50 }, { label: "4根", grams: 100 }]
+  },
+
+  // ─── 4. 蛋类 (Egg) ───
+  {
+    id: "egg_boiled_whole",
+    name: "水煮鸡蛋 (全蛋)",
+    nameEn: "Hard-boiled Egg",
+    pinyinIndex: "szjd",
+    category: "egg",
+    source: "CDC_CHINA",
+    per100g: { calories: 144, protein: 13.3, fat: 8.8, carbs: 2.8, fiber: 0, sodium: 130, sugar: 0.5 },
+    commonServings: [{ label: "1个全蛋", grams: 50 }, { label: "2个全蛋", grams: 100 }, { label: "3个全蛋", grams: 150 }]
+  },
+  {
+    id: "egg_white_boiled",
+    name: "水煮蛋白 (纯蛋白)",
+    nameEn: "Egg White",
+    pinyinIndex: "szdb",
+    category: "egg",
+    source: "USDA",
+    per100g: { calories: 47, protein: 11.0, fat: 0.1, carbs: 0.7, fiber: 0, sodium: 160, sugar: 0.5 },
+    commonServings: [{ label: "1个蛋白", grams: 33 }, { label: "2个蛋白", grams: 66 }, { label: "3个蛋白", grams: 100 }]
+  },
+  {
+    id: "egg_fried",
+    name: "煎鸡蛋 (少油煎蛋)",
+    nameEn: "Fried Egg",
+    pinyinIndex: "jjd",
+    category: "egg",
+    source: "CDC_CHINA",
+    per100g: { calories: 195, protein: 12.8, fat: 15.2, carbs: 1.8, fiber: 0, sodium: 180, sugar: 0.4 },
+    commonServings: [{ label: "1个煎蛋", grams: 55 }, { label: "2个煎蛋", grams: 110 }]
+  },
+  {
+    id: "quail_egg_boiled",
+    name: "水煮鹌鹑蛋",
+    nameEn: "Boiled Quail Egg",
+    pinyinIndex: "szacd",
+    category: "egg",
+    source: "CDC_CHINA",
+    per100g: { calories: 160, protein: 12.8, fat: 11.1, carbs: 2.1, fiber: 0, sodium: 140, sugar: 0.3 },
+    commonServings: [{ label: "5个鹌鹑蛋", grams: 50 }, { label: "10个", grams: 100 }]
+  },
+
+  // ─── 5. 乳制品 (Dairy) ───
+  {
+    id: "milk_skimmed",
+    name: "脱脂牛奶 (0脂肪)",
+    nameEn: "Skimmed Milk",
+    pinyinIndex: "tznn",
+    category: "dairy",
+    source: "CDC_CHINA",
+    per100g: { calories: 34, protein: 3.4, fat: 0.1, carbs: 5.0, fiber: 0, sodium: 55, sugar: 5.0 },
+    commonServings: [{ label: "1杯", grams: 200 }, { label: "1小盒利乐包", grams: 250 }]
+  },
+  {
+    id: "milk_whole",
+    name: "全脂纯牛奶",
+    nameEn: "Whole Milk",
+    pinyinIndex: "qznn",
+    category: "dairy",
+    source: "CDC_CHINA",
+    per100g: { calories: 65, protein: 3.2, fat: 3.6, carbs: 4.8, fiber: 0, sodium: 50, sugar: 4.8 },
+    commonServings: [{ label: "1盒利乐包装", grams: 250 }]
+  },
+  {
+    id: "greek_yogurt_0fat",
+    name: "天润 / 简爱 0蔗糖希腊酸奶 (脱脂)",
+    nameEn: "0-Sugar Greek Yogurt",
+    pinyinIndex: "xl0ztsn",
+    category: "dairy",
+    source: "USDA",
+    per100g: { calories: 59, protein: 10.2, fat: 0.5, carbs: 3.6, fiber: 0, sodium: 45, sugar: 3.2 },
+    commonServings: [{ label: "1盒/小碗", grams: 100 }, { label: "1杯标准装", grams: 135 }, { label: "1碗大份", grams: 200 }]
+  },
+  {
+    id: "whey_protein_isolate",
+    name: "乳清蛋白粉 (分离/浓缩 1勺)",
+    nameEn: "Whey Protein Powder",
+    pinyinIndex: "rqdbf",
+    category: "dairy",
+    source: "USDA",
+    per100g: { calories: 390, protein: 80.0, fat: 3.5, carbs: 8.5, fiber: 1.0, sodium: 160, sugar: 3.0 },
+    commonServings: [{ label: "1标准勺 (30g)", grams: 30 }, { label: "2勺 (60g)", grams: 60 }]
+  },
+  {
+    id: "cheese_slice_lowfat",
+    name: "低脂芝士片 / 奶酪片",
+    nameEn: "Low-fat Cheese Slice",
+    pinyinIndex: "dzzsp",
+    category: "dairy",
+    source: "USDA",
+    per100g: { calories: 235, protein: 24.0, fat: 12.0, carbs: 5.0, fiber: 0, sodium: 650, sugar: 2.0 },
+    commonServings: [{ label: "1片", grams: 20 }, { label: "2片", grams: 40 }]
+  },
+
+  // ─── 6. 豆制品 (Soy) ───
+  {
+    id: "tofu_firm",
+    name: "老豆腐 / 北豆腐",
+    nameEn: "Firm Tofu",
+    pinyinIndex: "ldf",
+    category: "soy",
+    source: "CDC_CHINA",
+    per100g: { calories: 82, protein: 12.2, fat: 4.8, carbs: 1.6, fiber: 1.2, sodium: 7.0, sugar: 0.5 },
+    commonServings: [{ label: "1块大豆腐", grams: 200 }, { label: "半块", grams: 100 }]
+  },
+  {
+    id: "tofu_soft",
+    name: "嫩豆腐 / 内酯豆腐",
+    nameEn: "Silken Tofu",
+    pinyinIndex: "ndf",
+    category: "soy",
+    source: "CDC_CHINA",
+    per100g: { calories: 50, protein: 5.2, fat: 2.5, carbs: 2.0, fiber: 0.6, sodium: 6.0, sugar: 0.4 },
+    commonServings: [{ label: "1盒", grams: 350 }, { label: "半盒", grams: 175 }]
+  },
+  {
+    id: "soy_milk_unsweetened",
+    name: "纯豆浆 (无糖)",
+    nameEn: "Unsweetened Soy Milk",
+    pinyinIndex: "cdj",
+    category: "soy",
+    source: "CDC_CHINA",
+    per100g: { calories: 31, protein: 3.0, fat: 1.6, carbs: 1.2, fiber: 0.5, sodium: 12.0, sugar: 0.5 },
+    commonServings: [{ label: "1杯", grams: 250 }, { label: "1大碗", grams: 350 }]
+  },
+  {
+    id: "edamame_boiled",
+    name: "水煮毛豆 (带壳/去壳)",
+    nameEn: "Boiled Edamame",
+    pinyinIndex: "szmd",
+    category: "soy",
+    source: "USDA",
+    per100g: { calories: 122, protein: 11.9, fat: 5.2, carbs: 8.9, fiber: 5.2, sodium: 6.0, sugar: 2.2 },
+    commonServings: [{ label: "1小碗毛豆仁", grams: 100 }]
+  },
+  {
+    id: "dried_tofu_slice",
+    name: "豆腐干 / 香干",
+    nameEn: "Dried Tofu",
+    pinyinIndex: "dfg",
+    category: "soy",
+    source: "CDC_CHINA",
+    per100g: { calories: 140, protein: 16.2, fat: 3.6, carbs: 10.5, fiber: 2.1, sodium: 450, sugar: 1.0 },
+    commonServings: [{ label: "1块", grams: 50 }, { label: "2块", grams: 100 }]
+  },
+
+  // ─── 7. 蔬菜菌藻 (Vegetable) ───
+  {
+    id: "cucumber",
+    name: "黄瓜 / 旱黄瓜",
+    nameEn: "Cucumber",
+    pinyinIndex: "hg",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 16, protein: 0.8, fat: 0.2, carbs: 2.9, fiber: 0.7, sodium: 4.0, sugar: 1.8 },
+    commonServings: [{ label: "1根中等黄瓜", grams: 150 }, { label: "1根大黄瓜", grams: 200 }]
+  },
+  {
+    id: "broccoli_boiled",
+    name: "水煮西兰花 / 绿花菜",
+    nameEn: "Boiled Broccoli",
+    pinyinIndex: "szxlh",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 34, protein: 2.8, fat: 0.4, carbs: 4.8, fiber: 2.6, sodium: 30, sugar: 1.4 },
+    commonServings: [{ label: "1小碗熟西兰花", grams: 100 }, { label: "1大盘", grams: 200 }]
+  },
+  {
+    id: "spinach_boiled",
+    name: "菠菜 (水焯烫熟)",
+    nameEn: "Boiled Spinach",
+    pinyinIndex: "bc",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 23, protein: 2.9, fat: 0.3, carbs: 2.5, fiber: 2.2, sodium: 65, sugar: 0.4 },
+    commonServings: [{ label: "1小盘", grams: 150 }]
+  },
+  {
+    id: "tomato_fresh",
+    name: "大番茄 / 西红柿",
+    nameEn: "Tomato",
+    pinyinIndex: "fq",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 18, protein: 0.9, fat: 0.2, carbs: 3.3, fiber: 1.2, sodium: 5.0, sugar: 2.6 },
+    commonServings: [{ label: "1个中等番茄", grams: 150 }, { label: "1个大番茄", grams: 200 }]
+  },
+  {
+    id: "cherry_tomato",
+    name: "圣女果 / 小番茄",
+    nameEn: "Cherry Tomato",
+    pinyinIndex: "sng",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 22, protein: 1.0, fat: 0.2, carbs: 4.4, fiber: 1.3, sodium: 8.0, sugar: 3.2 },
+    commonServings: [{ label: "8颗小番茄", grams: 100 }, { label: "1大盒", grams: 250 }]
+  },
+  {
+    id: "lettuce",
+    name: "生菜 / 球生菜",
+    nameEn: "Lettuce",
+    pinyinIndex: "sc",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 15, protein: 1.4, fat: 0.2, carbs: 2.2, fiber: 1.3, sodium: 10, sugar: 1.1 },
+    commonServings: [{ label: "1大把生菜叶", grams: 100 }]
+  },
+  {
+    id: "celery",
+    name: "西芹 / 芹菜",
+    nameEn: "Celery",
+    pinyinIndex: "qc",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 14, protein: 0.7, fat: 0.1, carbs: 2.8, fiber: 1.6, sodium: 80, sugar: 1.3 },
+    commonServings: [{ label: "1碗西芹段", grams: 100 }]
+  },
+  {
+    id: "asparagus_cooked",
+    name: "芦笋 (清炒/白灼)",
+    nameEn: "Cooked Asparagus",
+    pinyinIndex: "ls",
+    category: "vegetable",
+    source: "USDA",
+    per100g: { calories: 22, protein: 2.4, fat: 0.2, carbs: 4.1, fiber: 2.0, sodium: 14, sugar: 1.9 },
+    commonServings: [{ label: "5根熟芦笋", grams: 100 }]
+  },
+  {
+    id: "mushrooms_cooked",
+    name: "口蘑 / 白蘑菇 (无油香煎)",
+    nameEn: "Mushrooms",
+    pinyinIndex: "km",
+    category: "vegetable",
+    source: "USDA",
+    per100g: { calories: 28, protein: 3.1, fat: 0.3, carbs: 3.3, fiber: 1.0, sodium: 5.0, sugar: 2.0 },
+    commonServings: [{ label: "1盘口蘑", grams: 150 }]
+  },
+  {
+    id: "chinese_cabbage",
+    name: "大白菜 / 娃娃菜 (熟)",
+    nameEn: "Chinese Cabbage",
+    pinyinIndex: "dbc",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 17, protein: 1.5, fat: 0.2, carbs: 2.9, fiber: 1.1, sodium: 18, sugar: 1.5 },
+    commonServings: [{ label: "1碗水煮白菜", grams: 150 }]
+  },
+  {
+    id: "seaweed_wakame",
+    name: "裙带菜 / 凉拌海带丝",
+    nameEn: "Wakame Seaweed",
+    pinyinIndex: "qdc",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 45, protein: 3.0, fat: 0.6, carbs: 8.5, fiber: 3.5, sodium: 480, sugar: 0.6 },
+    commonServings: [{ label: "1小碗", grams: 100 }]
+  },
+
+  // ─── 8. 水果 (Fruit) ───
+  {
+    id: "apple_fresh",
+    name: "红富士苹果",
+    nameEn: "Apple",
+    pinyinIndex: "pg",
+    category: "fruit",
+    source: "CDC_CHINA",
+    per100g: { calories: 52, protein: 0.3, fat: 0.2, carbs: 13.8, fiber: 2.4, sodium: 1.0, sugar: 10.4 },
+    commonServings: [{ label: "1个小果", grams: 150 }, { label: "1个中果", grams: 200 }, { label: "1个大果", grams: 250 }]
+  },
+  {
+    id: "banana",
+    name: "香蕉 (去皮重)",
+    nameEn: "Banana",
+    pinyinIndex: "xj",
+    category: "fruit",
+    source: "USDA",
+    per100g: { calories: 89, protein: 1.1, fat: 0.3, carbs: 22.8, fiber: 2.6, sodium: 1.0, sugar: 12.2 },
+    commonServings: [{ label: "1根中等香蕉", grams: 120 }, { label: "1根小香蕉", grams: 90 }]
+  },
+  {
+    id: "blueberries",
+    name: "蓝莓 (新鲜)",
+    nameEn: "Blueberries",
+    pinyinIndex: "lm",
+    category: "fruit",
+    source: "USDA",
+    per100g: { calories: 57, protein: 0.7, fat: 0.3, carbs: 14.5, fiber: 2.4, sodium: 1.0, sugar: 9.9 },
+    commonServings: [{ label: "半盒", grams: 60 }, { label: "1盒标准装", grams: 125 }]
+  },
+  {
+    id: "avocado",
+    name: "牛油果 / 鳄梨 (去核皮)",
+    nameEn: "Avocado",
+    pinyinIndex: "nyg",
+    category: "fruit",
+    source: "USDA",
+    per100g: { calories: 160, protein: 2.0, fat: 14.7, carbs: 8.5, fiber: 6.7, sodium: 7.0, sugar: 0.7 },
+    commonServings: [{ label: "半个中等牛油果", grams: 70 }, { label: "1整个牛油果", grams: 140 }]
+  },
+  {
+    id: "orange",
+    name: "橙子 / 甜橙 (去皮)",
+    nameEn: "Orange",
+    pinyinIndex: "cz",
+    category: "fruit",
+    source: "CDC_CHINA",
+    per100g: { calories: 47, protein: 0.9, fat: 0.1, carbs: 11.8, fiber: 2.4, sodium: 1.5, sugar: 9.4 },
+    commonServings: [{ label: "1个中等橙子", grams: 180 }]
+  },
+  {
+    id: "kiwi_fruit",
+    name: "绿心 / 黄心猕猴桃",
+    nameEn: "Kiwi Fruit",
+    pinyinIndex: "mht",
+    category: "fruit",
+    source: "USDA",
+    per100g: { calories: 61, protein: 1.1, fat: 0.5, carbs: 14.7, fiber: 3.0, sodium: 3.0, sugar: 9.0 },
+    commonServings: [{ label: "1个中等果", grams: 100 }]
+  },
+  {
+    id: "strawberries",
+    name: "新鲜草莓",
+    nameEn: "Strawberries",
+    pinyinIndex: "cm",
+    category: "fruit",
+    source: "USDA",
+    per100g: { calories: 32, protein: 0.7, fat: 0.3, carbs: 7.7, fiber: 2.0, sodium: 1.0, sugar: 4.9 },
+    commonServings: [{ label: "6颗草莓", grams: 100 }, { label: "1盒", grams: 250 }]
+  },
+  {
+    id: "watermelon",
+    name: "西瓜 (去皮瓤)",
+    nameEn: "Watermelon",
+    pinyinIndex: "xg",
+    category: "fruit",
+    source: "CDC_CHINA",
+    per100g: { calories: 30, protein: 0.6, fat: 0.1, carbs: 7.5, fiber: 0.4, sodium: 1.0, sugar: 6.2 },
+    commonServings: [{ label: "1角小西瓜", grams: 250 }, { label: "1大碗西瓜块", grams: 350 }]
+  },
+
+  // ─── 9. 油脂调味 (Oil & Seasoning) ───
+  {
+    id: "olive_oil",
+    name: "欧丽薇兰 特级初榨橄榄油 / 喷雾装",
+    nameEn: "Extra Virgin Olive Oil",
+    pinyinIndex: "gly",
+    category: "oil",
+    source: "USDA",
+    per100g: { calories: 884, protein: 0, fat: 100, carbs: 0, fiber: 0, sodium: 2.0, sugar: 0 },
+    commonServings: [{ label: "按压喷雾1次 (约1ml)", grams: 1 }, { label: "1茶匙 (5ml)", grams: 5 }, { label: "1汤匙 (15ml)", grams: 14 }]
+  },
+  {
+    id: "peanut_oil",
+    name: "压榨花生油 / 菜籽油",
+    nameEn: "Peanut Oil",
+    pinyinIndex: "hsy",
+    category: "oil",
+    source: "CDC_CHINA",
+    per100g: { calories: 899, protein: 0, fat: 99.9, carbs: 0, fiber: 0, sodium: 1.0, sugar: 0 },
+    commonServings: [{ label: "1茶匙", grams: 5 }, { label: "1汤匙", grams: 15 }]
+  },
+  {
+    id: "butter_unsalted",
+    name: "动物无盐黄油",
+    nameEn: "Unsalted Butter",
+    pinyinIndex: "hy",
+    category: "oil",
+    source: "USDA",
+    per100g: { calories: 717, protein: 0.9, fat: 81.1, carbs: 0.1, fiber: 0, sodium: 11.0, sugar: 0.1 },
+    commonServings: [{ label: "1小块", grams: 10 }]
+  },
+  {
+    id: "light_soy_sauce",
+    name: "生抽 / 薄盐酱油",
+    nameEn: "Light Soy Sauce",
+    pinyinIndex: "scjy",
+    category: "oil",
+    source: "CDC_CHINA",
+    per100g: { calories: 60, protein: 6.5, fat: 0.1, carbs: 8.2, fiber: 0, sodium: 5800, sugar: 3.5 },
+    commonServings: [{ label: "1汤匙 (15g)", grams: 15 }]
+  },
+
+  // ─── 10. 坚果种子 (Nut & Seeds) ───
+  {
+    id: "almonds",
+    name: "原味熟巴旦木 / 杏仁",
+    nameEn: "Almonds",
+    pinyinIndex: "xr",
+    category: "nut",
+    source: "USDA",
+    per100g: { calories: 579, protein: 21.2, fat: 49.9, carbs: 21.6, fiber: 12.5, sodium: 1.0, sugar: 4.4 },
+    commonServings: [{ label: "10颗", grams: 15 }, { label: "1小把 (25g)", grams: 25 }]
+  },
+  {
+    id: "walnuts",
+    name: "纯核桃仁",
+    nameEn: "Walnuts",
+    pinyinIndex: "ht",
+    category: "nut",
+    source: "USDA",
+    per100g: { calories: 654, protein: 15.2, fat: 65.2, carbs: 13.7, fiber: 6.7, sodium: 2.0, sugar: 2.6 },
+    commonServings: [{ label: "2个完整核桃仁", grams: 15 }]
+  },
+  {
+    id: "chia_seeds",
+    name: "有机奇亚籽",
+    nameEn: "Chia Seeds",
+    pinyinIndex: "qyz",
+    category: "nut",
+    source: "USDA",
+    per100g: { calories: 486, protein: 16.5, fat: 30.7, carbs: 42.1, fiber: 34.4, sodium: 16.0, sugar: 0 },
+    commonServings: [{ label: "1勺 (10g)", grams: 10 }, { label: "2勺 (20g)", grams: 20 }]
+  },
+
+  // ─── 11. 中餐经典家常热菜与外卖 (Chinese Dishes) ───
+  {
+    id: "dish_tomato_scrambled_eggs",
+    name: "番茄炒蛋 / 西红柿炒鸡蛋",
+    nameEn: "Tomato Scrambled Eggs",
+    pinyinIndex: "fqcd",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 125, protein: 5.5, fat: 9.0, carbs: 5.8, fiber: 0.8, sodium: 320, sugar: 3.5 },
+    commonServings: [{ label: "1人份", grams: 180 }, { label: "1盘标准量", grams: 250 }]
+  },
+  {
+    id: "dish_kungpao_chicken",
+    name: "宫保鸡丁 (少油版)",
+    nameEn: "Kung Pao Chicken",
+    pinyinIndex: "gbjd",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 162, protein: 14.5, fat: 9.8, carbs: 5.2, fiber: 1.2, sodium: 450, sugar: 2.8 },
+    commonServings: [{ label: "1人份", grams: 200 }]
+  },
+  {
+    id: "dish_boiled_beef_slices",
+    name: "水煮牛肉 (滤去表面浮油)",
+    nameEn: "Sichuan Boiled Beef",
+    pinyinIndex: "sznr",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 145, protein: 16.2, fat: 8.0, carbs: 2.8, fiber: 1.5, sodium: 580, sugar: 0.8 },
+    commonServings: [{ label: "1人份熟重", grams: 220 }]
+  },
+  {
+    id: "dish_beef_celery_stirfry",
+    name: "芹菜炒牛肉",
+    nameEn: "Stir-fried Beef with Celery",
+    pinyinIndex: "qccnr",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 118, protein: 15.0, fat: 4.8, carbs: 3.2, fiber: 1.8, sodium: 360, sugar: 0.5 },
+    commonServings: [{ label: "1人份", grams: 200 }]
+  },
+  {
+    id: "dish_pork_pepper_stirfry",
+    name: "青椒炒瘦肉丝",
+    nameEn: "Stir-fried Pork with Green Pepper",
+    pinyinIndex: "qjcsrs",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 130, protein: 13.5, fat: 6.8, carbs: 3.8, fiber: 1.5, sodium: 380, sugar: 1.0 },
+    commonServings: [{ label: "1人份", grams: 180 }]
+  },
+  {
+    id: "dish_steamed_pork_ribs",
+    name: "豉汁蒸排骨 / 清蒸排骨",
+    nameEn: "Steamed Pork Ribs",
+    pinyinIndex: "czzpg",
+    category: "meat",
+    source: "CDC_CHINA",
+    per100g: { calories: 215, protein: 17.5, fat: 15.0, carbs: 3.0, fiber: 0.5, sodium: 420, sugar: 0.8 },
+    commonServings: [{ label: "1人份", grams: 150 }]
+  },
+  {
+    id: "dish_mapo_tofu",
+    name: "麻婆豆腐 (少油版)",
+    nameEn: "Mapo Tofu",
+    pinyinIndex: "mpdf",
+    category: "soy",
+    source: "CDC_CHINA",
+    per100g: { calories: 98, protein: 7.8, fat: 6.2, carbs: 3.4, fiber: 1.1, sodium: 480, sugar: 0.8 },
+    commonServings: [{ label: "1标准碗", grams: 200 }]
+  },
+  {
+    id: "dish_stirfry_broccoli_garlic",
+    name: "蒜蓉炒西兰花",
+    nameEn: "Garlic Fried Broccoli",
+    pinyinIndex: "srcxlh",
+    category: "vegetable",
+    source: "CDC_CHINA",
+    per100g: { calories: 55, protein: 2.8, fat: 3.5, carbs: 4.5, fiber: 2.4, sodium: 280, sugar: 1.2 },
+    commonServings: [{ label: "1大盘", grams: 200 }]
+  },
+  {
+    id: "dish_boiled_shrimp",
+    name: "白灼基围虾 (带壳整熟)",
+    nameEn: "Boiled Prawns",
+    pinyinIndex: "bzjwx",
+    category: "seafood",
+    source: "CDC_CHINA",
+    per100g: { calories: 101, protein: 21.0, fat: 1.1, carbs: 1.2, fiber: 0, sodium: 220, sugar: 0 },
+    commonServings: [{ label: "1盘 (约10-12只)", grams: 180 }]
+  },
+  {
+    id: "dish_corn_dumplings",
+    name: "玉米猪肉水饺 (煮熟)",
+    nameEn: "Boiled Pork & Corn Dumplings",
+    pinyinIndex: "ymzrsj",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 185, protein: 8.5, fat: 7.2, carbs: 22.0, fiber: 1.5, sodium: 360, sugar: 1.8 },
+    commonServings: [{ label: "6个水饺", grams: 120 }, { label: "10个水饺", grams: 200 }]
+  },
+  {
+    id: "dish_wonton_soup",
+    name: "鲜虾云吞汤 / 馄饨汤",
+    nameEn: "Shrimp Wonton in Soup",
+    pinyinIndex: "xxytt",
+    category: "staple",
+    source: "CDC_CHINA",
+    per100g: { calories: 110, protein: 6.8, fat: 3.2, carbs: 13.5, fiber: 0.8, sodium: 450, sugar: 0.5 },
+    commonServings: [{ label: "1碗 (8颗云吞带汤)", grams: 350 }]
+  },
+  {
+    id: "dish_chicken_salad",
+    name: "鸡胸肉轻食减脂沙拉 (无高热量沙拉酱)",
+    nameEn: "Chicken Breast Salad",
+    pinyinIndex: "jxrsl",
+    category: "custom",
+    source: "CDC_CHINA",
+    per100g: { calories: 78, protein: 9.5, fat: 2.2, carbs: 5.5, fiber: 2.5, sodium: 210, sugar: 2.0 },
+    commonServings: [{ label: "1标准轻食沙拉盒", grams: 280 }]
+  },
+
+  // ─── 12. 连锁外卖与便利店单品 (Fast Food & Chain) ───
+  {
+    id: "luckin_americano",
+    name: "瑞幸咖啡 冰美式 (无糖/标准)",
+    nameEn: "Luckin Iced Americano",
+    pinyinIndex: "rxbms",
+    category: "snack",
+    source: "USER_CUSTOM",
+    per100g: { calories: 2, protein: 0.2, fat: 0.05, carbs: 0.2, fiber: 0, sodium: 3.0, sugar: 0 },
+    commonServings: [{ label: "1杯大杯 (约450ml)", grams: 450 }]
+  },
+  {
+    id: "luckin_raw_coconut_latte_no_sugar",
+    name: "瑞幸咖啡 生椰拿铁 (不加糖版)",
+    nameEn: "Luckin Coconut Latte (Unsweetened)",
+    pinyinIndex: "rxsynt",
+    category: "snack",
+    source: "USER_CUSTOM",
+    per100g: { calories: 42, protein: 1.2, fat: 2.5, carbs: 3.8, fiber: 0.3, sodium: 35, sugar: 2.8 },
+    commonServings: [{ label: "1杯 (约450ml)", grams: 450 }]
+  },
+  {
+    id: "mcd_double_cheeseburger",
+    name: "麦当劳 双层吉士汉堡",
+    nameEn: "McDonald's Double Cheeseburger",
+    pinyinIndex: "mdlscjshb",
+    category: "snack",
+    source: "USDA",
+    per100g: { calories: 265, protein: 15.5, fat: 14.5, carbs: 18.0, fiber: 1.2, sodium: 580, sugar: 3.5 },
+    commonServings: [{ label: "1个完整汉堡 (165g)", grams: 165 }]
+  },
+  {
+    id: "mcd_grilled_chicken_burger",
+    name: "麦当劳 板烧鸡腿堡 (少酱/去酱)",
+    nameEn: "McDonald's Grilled Chicken Burger",
+    pinyinIndex: "mdlbsjtb",
+    category: "snack",
+    source: "USER_CUSTOM",
+    per100g: { calories: 215, protein: 13.8, fat: 10.5, carbs: 17.5, fiber: 1.0, sodium: 490, sugar: 2.5 },
+    commonServings: [{ label: "1个汉堡 (195g)", grams: 195 }]
+  },
+  {
+    id: "kfc_roast_chicken_burger",
+    name: "肯德基 新奥尔良烤鸡腿堡",
+    nameEn: "KFC Orleans Roast Chicken Burger",
+    pinyinIndex: "kdjxaelkjtb",
+    category: "snack",
+    source: "USER_CUSTOM",
+    per100g: { calories: 230, protein: 12.5, fat: 11.2, carbs: 20.0, fiber: 1.0, sodium: 520, sugar: 3.0 },
+    commonServings: [{ label: "1个汉堡 (185g)", grams: 185 }]
+  },
+  {
+    id: "subway_turkey_breast_6inch",
+    name: "赛百味 火鸡胸全麦潜水艇三明治 (6寸去高脂酱)",
+    nameEn: "Subway 6-inch Turkey Breast Sandwich",
+    pinyinIndex: "sbwhjxsmz",
+    category: "snack",
+    source: "USDA",
+    per100g: { calories: 125, protein: 9.5, fat: 1.8, carbs: 18.5, fiber: 2.5, sodium: 390, sugar: 2.2 },
+    commonServings: [{ label: "1个6寸三明治 (220g)", grams: 220 }]
+  },
+  {
+    id: "oriental_leaf_oolong_tea",
+    name: "农夫山泉 东方树叶乌龙茶 / 茉莉花茶 (0糖0卡)",
+    nameEn: "Oriental Leaf Unsweetened Tea",
+    pinyinIndex: "dfsywlc",
+    category: "snack",
+    source: "CDC_CHINA",
+    per100g: { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, sodium: 4.0, sugar: 0 },
+    commonServings: [{ label: "1瓶 (500ml)", grams: 500 }, { label: "1大瓶 (900ml)", grams: 900 }]
+  },
+  {
+    id: "chi_forest_sparkling_water",
+    name: "元气森林 0糖0卡气泡水 (白桃/白草莓味)",
+    nameEn: "Chi Forest Sparkling Water",
+    pinyinIndex: "yqslqps",
+    category: "snack",
+    source: "CDC_CHINA",
+    per100g: { calories: 0, protein: 0, fat: 0, carbs: 0.9, fiber: 0, sodium: 6.0, sugar: 0 },
+    commonServings: [{ label: "1罐/瓶 (480ml)", grams: 480 }]
+  },
+  {
+    id: "coke_zero",
+    name: "可口可乐 零度 / 无糖版",
+    nameEn: "Coca-Cola Zero Sugar",
+    pinyinIndex: "ldkkkl",
+    category: "snack",
+    source: "USDA",
+    per100g: { calories: 0, protein: 0, fat: 0, carbs: 0, fiber: 0, sodium: 12.0, sugar: 0 },
+    commonServings: [{ label: "1罐装 (330ml)", grams: 330 }, { label: "1瓶装 (500ml)", grams: 500 }]
+  },
+  {
+    id: "dark_chocolate_85",
+    name: "纯黑巧克力 (85% 可可含量)",
+    nameEn: "85% Dark Chocolate",
+    pinyinIndex: "85hqkl",
+    category: "snack",
+    source: "USDA",
+    per100g: { calories: 580, protein: 9.8, fat: 48.0, carbs: 25.5, fiber: 11.0, sodium: 15.0, sugar: 14.0 },
+    commonServings: [{ label: "1小片", grams: 10 }, { label: "2小片", grams: 20 }]
+  },
+  {
+    id: "protein_bar",
+    name: "高蛋白代餐棒 / 蛋白威化",
+    nameEn: "Protein Bar",
+    pinyinIndex: "dbb",
+    category: "snack",
+    source: "USER_CUSTOM",
+    per100g: { calories: 360, protein: 32.0, fat: 11.5, carbs: 33.0, fiber: 9.0, sodium: 220, sugar: 2.5 },
+    commonServings: [{ label: "1根标准装", grams: 45 }, { label: "1根大能量棒", grams: 60 }]
+  },
+  {
+    id: "beef_jerky_low_fat",
+    name: "风干牛肉干 (低盐无添加糖版)",
+    nameEn: "Lean Beef Jerky",
+    pinyinIndex: "fgnrg",
+    category: "snack",
+    source: "CDC_CHINA",
+    per100g: { calories: 290, protein: 55.0, fat: 6.5, carbs: 4.0, fiber: 0, sodium: 650, sugar: 1.0 },
+    commonServings: [{ label: "1小包", grams: 30 }, { label: "2小包", grams: 60 }]
+  }
+];
+
+// Write to public/data/foods.json
+fs.writeFileSync('public/data/foods.json', JSON.stringify(foods, null, 2), 'utf-8');
+console.log(`Successfully generated ${foods.length} comprehensive foods into public/data/foods.json!`);

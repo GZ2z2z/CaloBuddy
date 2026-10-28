@@ -165,13 +165,29 @@ export function MealCard({ mealType, entries, targetCalories, onAddClick }: Meal
                         {entry.emoji ?? '🥗'}
                       </div>
 
-                      {/* Food Name & Grams */}
+                      {/* Food Name & Grams / Servings */}
                       <div className="min-w-0">
                         <div className="text-[15px] font-semibold text-[var(--color-text-primary)] truncate">
                           {entry.name}
                         </div>
                         <div className="text-xs text-[var(--color-text-secondary)] mt-0.5">
-                          {entry.grams} 克 · 蛋白{entry.protein}g · 碳水{entry.carbs}g · 脂肪{entry.fat}g
+                          {entry.servingUnitWeight && entry.servingCount ? (
+                            <span className="flex items-center gap-1 flex-wrap">
+                              <span className="text-[var(--color-calories)] font-semibold">
+                                {entry.servingUnitWeight}{entry.unit ?? 'g'}/{entry.servingLabel ?? '份'} × {entry.servingCount}{entry.servingLabel ?? '份'}
+                              </span>
+                              <span className="font-medium text-[var(--color-text-primary)]">
+                                (总重 {entry.grams}{entry.unit ?? 'g'})
+                              </span>
+                              <span className="text-[var(--color-text-tertiary)]">
+                                · P{entry.protein} C{entry.carbs} F{entry.fat}
+                              </span>
+                            </span>
+                          ) : (
+                            <span>
+                              {entry.grams} {entry.unit === 'ml' ? '毫升' : '克'} · P{entry.protein} C{entry.carbs} F{entry.fat}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

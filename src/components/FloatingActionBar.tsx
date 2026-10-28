@@ -6,25 +6,41 @@ interface FloatingActionBarProps {
   onQuickSearch: () => void;
   onQuickScan: () => void;
   onQuickAi: () => void;
+  onQuickFastLog?: () => void;
 }
 
 export function FloatingActionBar({
   onQuickSearch,
   onQuickScan,
   onQuickAi,
+  onQuickFastLog,
 }: FloatingActionBarProps) {
   return (
-    <div className="fixed bottom-20 left-0 right-0 z-20 flex justify-center pointer-events-none px-4">
-      <div className="pointer-events-auto flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#D1FAE5]/95 dark:bg-[#064E3B]/95 text-[#065F46] dark:text-[#A7F3D0] backdrop-blur-xl border border-emerald-300/40 dark:border-emerald-700/50 shadow-xl shadow-emerald-600/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+    <div className="fixed bottom-20 left-0 right-0 z-20 flex justify-center pointer-events-none px-3">
+      <div className="pointer-events-auto flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#D1FAE5]/95 dark:bg-[#064E3B]/95 text-[#065F46] dark:text-[#A7F3D0] backdrop-blur-xl border border-emerald-300/40 dark:border-emerald-700/50 shadow-xl shadow-emerald-600/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+        {/* 快录大卡 */}
+        {onQuickFastLog && (
+          <>
+            <button
+              onClick={onQuickFastLog}
+              className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold bg-[#065F46] text-[#A7F3D0] dark:bg-[#A7F3D0] dark:text-[#065F46] hover:opacity-90 transition-opacity shadow-xs"
+            >
+              <span>⚡</span>
+              <span>快录大卡</span>
+            </button>
+            <span className="w-px h-3.5 bg-emerald-400/40 dark:bg-emerald-600/50" />
+          </>
+        )}
+
         {/* AI 算热量 */}
         <button
           onClick={onQuickAi}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold hover:bg-emerald-200/60 dark:hover:bg-emerald-800/60 transition-colors"
+          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold hover:bg-emerald-200/60 dark:hover:bg-emerald-800/60 transition-colors"
         >
-          <span className="w-4 h-4 rounded-full bg-[#065F46] text-[#A7F3D0] dark:bg-[#A7F3D0] dark:text-[#065F46] flex items-center justify-center text-[9px] font-black">
+          <span className="w-3.5 h-3.5 rounded-full bg-[#065F46] text-[#A7F3D0] dark:bg-[#A7F3D0] dark:text-[#065F46] flex items-center justify-center text-[8px] font-black">
             AI
           </span>
-          <span>算热量</span>
+          <span>AI推算</span>
         </button>
 
         <span className="w-px h-3.5 bg-emerald-400/40 dark:bg-emerald-600/50" />
@@ -32,10 +48,10 @@ export function FloatingActionBar({
         {/* 文字记账 */}
         <button
           onClick={onQuickSearch}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-emerald-200/60 dark:hover:bg-emerald-800/60 transition-colors"
+          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold hover:bg-emerald-200/60 dark:hover:bg-emerald-800/60 transition-colors"
         >
           <span>✏️</span>
-          <span>文字</span>
+          <span>搜食物</span>
         </button>
 
         <span className="w-px h-3.5 bg-emerald-400/40 dark:bg-emerald-600/50" />
@@ -43,7 +59,7 @@ export function FloatingActionBar({
         {/* 拍照识表 */}
         <button
           onClick={onQuickScan}
-          className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold hover:bg-emerald-200/60 dark:hover:bg-emerald-800/60 transition-colors"
+          className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold hover:bg-emerald-200/60 dark:hover:bg-emerald-800/60 transition-colors"
         >
           <span>📷</span>
           <span>拍照</span>
