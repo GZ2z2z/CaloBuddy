@@ -3,12 +3,18 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '@/stores/appStore';
 import { calculateBMR, calculateTDEE, calculateTargetCalories, calculateMacros, getAge } from '@/utils/calculator';
 import { db } from '@/db';
+import { uploadToGist, downloadFromGist } from '@/utils/githubSync';
 import toast from 'react-hot-toast';
 
 export function SettingsPage() {
   const { profile, setProfile, theme, setTheme } = useAppStore();
   const [editingWeight, setEditingWeight] = useState(false);
   const [newWeight, setNewWeight] = useState('');
+
+  // GitHub Sync state
+  const [syncToken, setSyncToken] = useState(profile?.githubSyncToken ?? '');
+  const [syncGistId, setSyncGistId] = useState(profile?.gistId ?? '');
+  const [isSyncing, setIsSyncing] = useState(false);
 
   if (!profile) return null;
 
@@ -69,6 +75,47 @@ export function SettingsPage() {
       }
     };
     input.click();
+  };
+
+  const handleCloudUpload = async () => {
+    if (!syncToken.trim()) {
+      toast.error('请先输入 GitHub Personal Access Token (需勾选 gist 权限)');
+      return;
+    }
+    setIsSyncing(true);
+    try {
+      const res = await uploadToGist(syncToken, syncGistId || undefined);
+      setSyncGistId(res.gistId);
+      if (profile) {
+        await setProfile({
+          ...profile,
+          githubSyncToken: syncToken.trim(),
+          gistId: res.gistId,
+          lastSyncAt: Date.now(),
+        });
+      }
+      toast.success('✨ 饮食记录已同步备份至云端私有 Gist！');
+    } catch (err: any) {
+      toast.error(err.message || '云端同步失败');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleCloudDownload = async () => {
+    if (!syncToken.trim() || !syncGistId.trim()) {
+      toast.error('从云端恢复需同时提供 GitHub Token 和 Gist ID');
+      return;
+    }
+    setIsSyncing(true);
+    try {
+      const res = await downloadFromGist(syncToken, syncGistId);
+      toast.success(`✅ 成功从云端恢复并合并 ${res.logCount} 天饮食记录！`);
+    } catch (err: any) {
+      toast.error(err.message || '拉取失败');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   return (
@@ -202,9 +249,72 @@ export function SettingsPage() {
         </div>
       </section>
 
+      {/* Cloud Sync Section */}
+      <section className="bg-[var(--color-bg-card)] rounded-2xl p-5 border border-[var(--color-divider)] mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">☁️ 跨设备私有云同步 (GitHub Gist)</h2>
+          {profile.lastSyncAt && (
+            <span className="text-[10px] text-[var(--color-text-secondary)]">
+              上次同步: {new Date(profile.lastSyncAt).toLocaleTimeString()}
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-[var(--color-text-secondary)] mb-3 leading-relaxed">
+          利用你的 GitHub 账号免费私有 Gist 存储，在 iPhone 与 iPad 之间随时双向同步，数据 100% 仅归你所有。
+        </p>
+
+        <div className="space-y-2 mb-3">
+          <div>
+            <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+              GitHub Personal Access Token (PAT)
+            </label>
+            <input
+              type="password"
+              placeholder="ghp_xxxx (需勾选 gist 权限)"
+              value={syncToken}
+              onChange={(e) => setSyncToken(e.target.value)}
+              className="w-full px-3 py-1.5 text-xs rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)]"
+            />
+          </div>
+
+          <div>
+            <label className="text-[11px] text-[var(--color-text-secondary)] block mb-1">
+              云端 Gist ID（首次上传自动生成）
+            </label>
+            <input
+              type="text"
+              placeholder="自动生成或粘贴已有 Gist ID"
+              value={syncGistId}
+              onChange={(e) => setSyncGistId(e.target.value)}
+              className="w-full px-3 py-1.5 text-xs rounded-xl bg-[var(--color-bg-secondary)] border border-[var(--color-divider)] font-mono"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleCloudUpload}
+            disabled={isSyncing}
+            className="py-2 rounded-xl text-xs font-semibold bg-[var(--color-calories)] text-white shadow-xs hover:opacity-95 transition-opacity disabled:opacity-50"
+          >
+            {isSyncing ? '同步中...' : '☁️ 备份上传至云端'}
+          </button>
+          <button
+            onClick={handleCloudDownload}
+            disabled={isSyncing}
+            className="py-2 rounded-xl text-xs font-semibold bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            {isSyncing ? '同步中...' : '⬇️ 从云端同步合并'}
+          </button>
+        </div>
+      </section>
+
       {/* Data management */}
       <section className="bg-[var(--color-bg-card)] rounded-2xl p-5 border border-[var(--color-divider)] mb-4">
-        <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-3">数据管理</h2>
+        <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2">本地备份与 AirDrop</h2>
+        <p className="text-xs text-[var(--color-text-secondary)] mb-3">
+          也可通过 iPhone / iPad 自带的「隔空投送 (AirDrop)」或「iCloud 云盘」直接将数据导出文件发送给另一台设备快速导入。
+        </p>
         <div className="space-y-2">
           <button
             onClick={handleExport}

@@ -92,6 +92,9 @@ export interface UserProfile {
   targetFat: number;
   targetCarbs: number;
   geminiApiKey?: string;
+  githubSyncToken?: string;
+  gistId?: string;
+  lastSyncAt?: number;
   theme: ThemeMode;
   targetWaterMl: number;
   createdAt: number;
